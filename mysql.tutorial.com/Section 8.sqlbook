@@ -1,0 +1,292 @@
+-- SQLBook: Code
+CREATE DATABASE IF NOT EXISTS hr;
+
+-- SQLBook: Code
+-- Active: 1712274533216@@127.0.0.1@3306@hr
+CREATE TABLE departments (
+    department_id INT AUTO_INCREMENT PRIMARY KEY,
+    dept_name VARCHAR(100) NOT NULL
+)
+-- SQLBook: Code
+-- Active: 1712274533216@@127.0.0.1@3306@hr
+CREATE TABLE employees (
+    id int AUTO_INCREMENT primary key,
+    first_name VARCHAR(50) not null,
+    last_name VARCHAR(50) not null,
+    department_id INT not null,
+    FOREIGN KEY (department_id)
+        REFERENCES departments (department_id)
+);
+-- SQLBook: Code
+INSERT INTO departments(dept_name) 
+VALUES 
+  ('Sales'), 
+  ('Markting'), 
+  ('Finance'), 
+  ('Accounting'), 
+  ('Warehouses'), 
+  ('Production');
+-- SQLBook: Code
+INSERT INTO employees(
+  first_name, last_name, department_id
+) 
+VALUES 
+  ('John', 'Doe', 1), 
+  ('Bush', 'Lily', 2), 
+  ('David', 'Dave', 3), 
+  ('Mary', 'Jane', 4), 
+  ('Jonatha', 'Josh', 5), 
+  ('Mateo', 'More', 1);
+-- SQLBook: Code
+SELECT
+ department_id,
+    dept_name
+FROM
+ departments
+
+
+select 
+id, first_name, last_name, department_id
+from employees
+
+-- SQLBook: Code
+-- Active: 1712274533216@@127.0.0.1@3306@hr
+CREATE VIEW v_employee_info as
+SELECT
+  id,
+  first_name,
+  last_name,
+  dept_name
+from
+  employees
+  inner join departments USING (department_id);
+-- SQLBook: Code
+SELECT * FROM v_employee_info;
+-- SQLBook: Code
+RENAME TABLE employees TO people;
+-- SQLBook: Code
+check table v_employee_info;
+-- SQLBook: Code
+-- Active: 1712274533216@@127.0.0.1@3306@hr
+RENAME TABLE people TO employees;
+-- SQLBook: Code
+DELIMITER $$
+
+CREATE PROCEDURE get_employee(IN p_id INT)
+BEGIN
+	SELECT first_name, last_name, dept_name
+	FROM employees
+	INNER JOIN departments using (department_id)
+	WHERE id = p_id;
+END$$
+
+DELIMITER ;
+-- SQLBook: Code
+CALL get_employee(1);
+-- SQLBook: Code
+CALL get_employee(1);
+-- SQLBook: Code
+describe employees;
+-- SQLBook: Code
+-- Active: 1712274533216@@127.0.0.1@3306@classicmodels
+DESCRIBE departments;
+-- SQLBook: Code
+CREATE TABLE posts (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    title VARCHAR(255) NOT NULL,
+    excerpt VARCHAR(400),
+    content TEXT,
+    created_at DATETIME,
+    updated_at DATETIME
+);
+-- SQLBook: Code
+ALTER TABLE posts
+DROP COLUMN excerpt;
+-- SQLBook: Code
+DESCRIBE posts;
+-- SQLBook: Code
+ALTER TABLE posts
+DROP COLUMN created_at,
+DROP COLUMN updated_at;
+-- SQLBook: Code
+CREATE TABLE categories (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(255)
+);
+-- SQLBook: Code
+ALTER TABLE posts
+ADD COLUMN category_id INT NOT NULL;
+-- SQLBook: Code
+ALTER TABLE posts
+ADD CONSTRAINT fk_cat
+FOREIGN KEY (category_id)
+REFERENCES categories(id);
+-- SQLBook: Code
+DESCRIBE posts;
+-- SQLBook: Code
+DESCRIBE categories;
+-- SQLBook: Code
+CREATE TABLE parts (
+    part_no VARCHAR(18) PRIMARY KEY,
+    description VARCHAR(40),
+    cost DECIMAL(10,2 ) NOT NULL CHECK (cost >= 0),
+    price DECIMAL(10,2) NOT NULL CHECK (price >= 0)
+);
+-- SQLBook: Code
+SHOW CREATE TABLE parts;
+-- SQLBook: Code
+DROP TABLE IF EXISTS parts;
+-- SQLBook: Code
+CREATE TABLE parts (
+    part_no VARCHAR(18) PRIMARY KEY,
+    description VARCHAR(40),
+    cost DECIMAL(10,2 ) NOT NULL CHECK (cost >= 0),
+    price DECIMAL(10,2) NOT NULL CHECK (price >= 0),
+    CONSTRAINT parts_chk_price_gt_cost 
+        CHECK(price >= cost)
+);
+-- SQLBook: Code
+show CREATE TABLE parts;
+-- SQLBook: Code
+CREATE TABLE working_calendars (
+    year INT,
+    week INT,
+    days BIT(7),
+    PRIMARY KEY (year, week)
+);
+
+-- SQLBook: Code
+INSERT INTO working_calendars(year, week, days)
+VALUES (2017, 1, B'1111100');
+
+-- SQLBook: Code
+SELECT year, week, days
+FROM working_calendars;
+
+-- SQLBook: Code
+SELECT year, week, BIN(days)
+FROM working_calendars;
+
+-- SQLBook: Code
+SELECT CHARSET(B'01'); -- Output: binary
+-- SQLBook: Code
+CREATE TABLE t (id int, v blob);
+INSERT INTO t VALUES (1, JSON_ARRAY_PACK('[0.7, 
+0.2, 0.1]')
+-- SQLBook: Code
+-- Active: 1712274533216@@127.0.0.1@3306@classicmodels
+drop table task
+-- SQLBook: Code
+-- Active: 1712274533216@@127.0.0.1@3306@hr
+CREATE TABLE tasks (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    title VARCHAR(255) NOT NULL,
+    completed BOOLEAN
+);
+-- SQLBook: Code
+DESCRIBE tasks;
+-- SQLBook: Code
+INSERT INTO 
+       tasks(title, completed)
+VALUES
+      ('Master MySQL Boolean type', true),
+      ('Design database table', false);
+-- SQLBook: Code
+SELECT
+  id,
+  title,
+  completed
+FROM
+  tasks;
+-- SQLBook: Code
+INSERT INTO tasks(title, completed)
+VALUES
+  ('Test Boolean with a number', 8);
+-- SQLBook: Code
+SELECT * FROM tasks;
+-- SQLBook: Code
+SELECT
+  id,
+  title,
+  IF(completed, 'true', 'false') completed
+FROM
+  tasks;
+-- SQLBook: Code
+INSERT INTO tasks(title, completed)
+VALUES
+  ('Test Boolean with NULL', NULL);
+-- SQLBook: Code
+DESCRIBE tasks;
+-- SQLBook: Code
+
+-- SQLBook: Code
+drop table t
+
+CREATE TABLE t (
+   ts TIMESTAMP
+);
+-- SQLBook: Code
+SET time_zone='+00:00';
+-- SQLBook: Code
+INSERT INTO t(ts)
+VALUES('2008-01-01 00:00:01');
+-- SQLBook: Code
+SELECT ts FROM t;
+-- SQLBook: Code
+SET time_zone ='+03:00';
+-- SQLBook: Code
+SELECT ts FROM t;
+-- SQLBook: Code
+CREATE TABLE people (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    first_name VARCHAR(50) NOT NULL,
+    last_name VARCHAR(50) NOT NULL,
+    birth_date DATE NOT NULL
+);
+
+
+INSERT INTO people(first_name,last_name,birth_date)
+VALUES('John','Doe','1990-09-01');
+
+
+SELECT 
+    first_name, 
+    last_name, 
+    birth_date
+FROM
+    people;
+
+INSERT INTO people(first_name,last_name,birth_date)
+VALUES('Jack','Daniel','01-09-01'),
+      ('Lily','Bush','80-09-01');
+
+      select now()
+-- SQLBook: Code
+select(date(now()))
+-- SQLBook: Code
+SELECT CURDATE();
+-- SQLBook: Code
+SELECT YEAR('1977-10-26','2014-11-04') YEARS
+-- SQLBook: Code
+SELECT DATEDIFF('2014-11-04', '1977-10-26') / 365 AS YEARS
+-- SQLBook: Code
+CREATE TABLE products2(
+   id INT AUTO_INCREMENT PRIMARY KEY,
+   name VARCHAR(255) NOT NULL,
+   price DECIMAL(10,2) NOT NULL,
+   properties JSON
+);
+-- SQLBook: Code
+INSERT INTO products2(name, price, properties)
+VALUES('T-Shirt', 25.99, '{"sizes":["S","M","L","XL"], "colors": ["white","black"]}');
+-- SQLBook: Code
+SELECT name, properties 
+FROM products2;
+-- SQLBook: Code
+SELECT JSON_PRETTY(properties)
+FROM products2;
+-- SQLBook: Code
+SELECT JSON_EXTRACT(properties, "$.colors[0]")
+FROM products2;
+-- SQLBook: Code
+SELECT UUID();

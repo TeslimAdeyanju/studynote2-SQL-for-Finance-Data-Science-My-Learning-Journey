@@ -1,0 +1,256 @@
+-- SQLBook: Markup
+### 1. INSERT
+-- SQLBook: Code
+
+-- SQLBook: Markup
+### 2. INSERT MULTIPLE ROWS
+-- SQLBook: Code
+
+-- SQLBook: Code
+
+-- SQLBook: Markup
+### 3. INSERT INTO SELECT
+-- SQLBook: Code
+
+-- SQLBook: Code
+
+-- SQLBook: Code
+
+-- SQLBook: Markup
+### 4. INSERT IGNORE
+-- SQLBook: Code
+CREATE TABLE subscribers (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    email VARCHAR(130) NOT NULL UNIQUE
+);
+-- SQLBook: Code
+INSERT INTO subscribers(email)
+VALUES('john.doe@gmail.com');
+-- SQLBook: Code
+INSERT ignore INTO subscribers(email)
+VALUES('john.doe@gmail.com'),
+      ('jane.smith@ibm.com');
+-- SQLBook: Code
+show WARNINGS
+-- SQLBook: Code
+select * from subscribers
+-- SQLBook: Code
+CREATE TABLE tokens (
+    s VARCHAR(6)
+);
+
+
+INSERT INTO tokens VALUES('abcdefg');
+
+
+INSERT IGNORE INTO tokens VALUES('abcdefg');
+
+
+SELECT * FROM tokens;
+-- SQLBook: Markup
+###  5. INSERT DATETIME VALUES
+-- SQLBook: Code
+
+-- SQLBook: Code
+
+-- SQLBook: Markup
+### 6. INSERT DATE
+-- SQLBook: Code
+
+-- SQLBook: Code
+
+-- SQLBook: Markup
+### 7. UPDATE
+-- SQLBook: Code
+-- Active: 1712274533216@@127.0.0.1@3306@classicmodels
+select
+firstname,
+lastname,
+email
+from employees
+where employeeNumber = 1056
+-- SQLBook: Code
+UPDATE employees
+SET
+    email = 'mary.patterson@classicmodelcars.com'
+WHERE
+    employeeNumber = 1056;
+-- SQLBook: Code
+
+select
+firstname,
+lastname,
+email
+from employees
+where employeeNumber = 1056
+-- SQLBook: Code
+SELECT
+    customername,
+    salesRepEmployeeNumber
+FROM
+    customers
+WHERE
+    salesRepEmployeeNumber IS NULL;
+-- SQLBook: Code
+SELECT
+    employeeNumber
+FROM
+    employees
+WHERE
+    jobtitle = 'Sales Rep'
+ORDER BY RAND()
+LIMIT 1;
+-- SQLBook: Code
+UPDATE customers
+SET
+    salesRepEmployeeNumber = (SELECT
+            employeeNumber
+        FROM
+            employees
+        WHERE
+            jobtitle = 'Sales Rep'
+        ORDER BY RAND()
+        LIMIT 1)
+WHERE
+    salesRepEmployeeNumber IS NULL;
+-- SQLBook: Markup
+### 8. UPDATE JOIN
+-- SQLBook: Markup
+
+-- SQLBook: Code
+
+-- SQLBook: Markup
+### 9. DELETE
+-- SQLBook: Code
+-- create a databse
+CREATE TABLE contacts (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    first_name VARCHAR(50),
+    last_name VARCHAR(50),
+    email VARCHAR(100) UNIQUE,
+    phone VARCHAR(20)
+);
+-- SQLBook: Code
+INSERT INTO contacts (first_name, last_name, email, phone)
+VALUES
+    ('John', 'Doe', 'john.doe@email.com', '123-456-7890'),
+    ('Jane', 'Smith', 'jane.smith@email.com', '987-654-3210'),
+    ('Alice', 'Doe', 'alice.doe@email.com', '555-123-4567'),
+    ('Bob', 'Johnson', 'bob.johnson@email.com', '789-321-6540'),
+    ('Eva', 'Doe', 'eva.doe@email.com', '111-222-3333'),
+    ('Michael', 'Smith', 'michael.smith@email.com', '444-555-6666'),
+    ('Sophia', 'Johnson', 'sophia.johnson@email.com', '777-888-9999'),
+    ('Matthew', 'Doe', 'matthew.doe@email.com', '333-222-1111'),
+    ('Olivia', 'Smith', 'olivia.smith@email.com', '999-888-7777'),
+    ('Daniel', 'Johnson', 'daniel.johnson@email.com', '666-555-4444'),
+    ('Emma', 'Doe', 'emma.doe@email.com', '222-333-4444'),
+    ('William', 'Smith', 'william.smith@email.com', '888-999-0000'),
+    ('Ava', 'Johnson', 'ava.johnson@email.com', '111-000-9999'),
+    ('Liam', 'Doe', 'liam.doe@email.com', '444-777-3333'),
+    ('Mia', 'Smith', 'mia.smith@email.com', '222-444-8888'),
+    ('James', 'Johnson', 'james.johnson@email.com', '555-666-1111'),
+    ('Grace', 'Doe', 'grace.doe@email.com', '777-222-8888'),
+    ('Benjamin', 'Smith', 'benjamin.smith@email.com', '999-111-3333'),
+    ('Chloe', 'Johnson', 'chloe.johnson@email.com', '111-444-7777'),
+    ('Logan', 'Doe', 'logan.doe@email.com', '333-555-9999');
+-- SQLBook: Code
+select * from contacts
+-- SQLBook: Code
+delete from contacts
+where id = 1
+-- SQLBook: Code
+SELECT * from contacts
+-- SQLBook: Code
+delete from contacts
+where id = 18
+-- SQLBook: Code
+select * from contacts
+where last_name = 'Smith'
+-- SQLBook: Code
+select *
+from contacts
+ORDER BY first_name
+-- SQLBook: Code
+
+-- SQLBook: Markup
+### 10. DELETE CASCADE
+-- SQLBook: Code
+CREATE TABLE buildings (
+    building_no INT PRIMARY KEY AUTO_INCREMENT,
+    building_name VARCHAR(255) NOT NULL,
+    address VARCHAR(255) NOT NULL
+);
+-- SQLBook: Code
+CREATE TABLE rooms (
+    room_no INT PRIMARY KEY AUTO_INCREMENT,
+    room_name VARCHAR(255) NOT NULL,
+    building_no INT NOT NULL,
+    FOREIGN KEY (building_no)
+        REFERENCES buildings (building_no)
+        ON DELETE CASCADE
+);
+-- SQLBook: Code
+INSERT INTO buildings(building_name,address)
+VALUES('ACME Headquaters','3950 North 1st Street CA 95134'),
+      ('ACME Sales','5000 North 1st Street CA 95134');
+-- SQLBook: Code
+SELECT * FROM buildings;
+-- SQLBook: Code
+INSERT INTO rooms(room_name,building_no)
+VALUES('Amazon',1),
+      ('War Room',1),
+      ('Office of CEO',1),
+      ('Marketing',2),
+      ('Showroom',2);
+-- SQLBook: Code
+SELECT * FROM rooms;
+-- SQLBook: Code
+select building_no, room_name
+from rooms
+where building_no = 2;
+-- SQLBook: Code
+DELETE FROM buildings
+WHERE building_no = 2;
+-- SQLBook: Code
+select * from rooms;
+-- SQLBook: Code
+USE information_schema;
+
+SELECT
+    table_name
+FROM
+    referential_constraints
+WHERE
+    constraint_schema = 'classicmodels'
+        AND referenced_table_name = 'buildings'
+        AND delete_rule = 'CASCADE'
+-- SQLBook: Markup
+### 11. DELETE JOIN
+-- SQLBook: Code
+-- Drop tables if they exist
+DROP TABLE IF EXISTS t1, t2;
+
+-- Create t1 with an auto-incrementing primary key
+CREATE TABLE t1 (
+    id INT PRIMARY KEY AUTO_INCREMENT
+);
+
+-- Create t2 with a VARCHAR primary key and a reference column
+CREATE TABLE t2 (
+    id VARCHAR(20) PRIMARY KEY,
+    ref INT NOT NULL
+);
+
+-- Insert sample data into t1 and t2
+INSERT INTO t1 VALUES (1), (2), (3);
+INSERT INTO t2 (id, ref) VALUES ('A', 1), ('B', 2), ('C', 3);
+
+-- SQLBook: Code
+select * from t1;
+-- SQLBook: Code
+SELECT * FROM t2;
+-- SQLBook: Code
+DELETE t1, t2
+FROM t1
+INNER JOIN t2 ON t2.ref = t1.id
+WHERE t1.id = 1;

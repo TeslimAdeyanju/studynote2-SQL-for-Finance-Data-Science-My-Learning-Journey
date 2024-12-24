@@ -1,0 +1,11 @@
+-- SQLBook: Code
+SELECT
+    payment_table.customerNumber,
+    payment_table.checkNumber,
+    payment_table.amount
+FROM
+    payments as payment_table
+JOIN
+    (SELECT MAX(amount) AS max_amount FROM payments) AS max_payments_table
+ON
+    payment_table.amount = max_payments_table.max_amount;
