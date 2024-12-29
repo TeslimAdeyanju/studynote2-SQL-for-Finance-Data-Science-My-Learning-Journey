@@ -15,6 +15,8 @@ WHERE
         );
 
 
+# Note
+
 # 1.1 MySQL subquery:  with comparison operators
 SELECT
     customerNumber,
