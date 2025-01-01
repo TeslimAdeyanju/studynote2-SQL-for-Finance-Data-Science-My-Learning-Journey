@@ -1,0 +1,320 @@
+{
+    "type": "MySQLNotebook",
+    "version": "1.0",
+    "caption": "DB Notebook",
+    "content": "\\about\nSELECT\n    p.productName, \n    o.productCode,\n    o.priceEach,\n    o.quantityOrdered,\n    CASE\n        WHEN o.quantityOrdered <= 20 THEN 'group a'\n        WHEN o.quantityOrdered <= 30 THEN 'group b'\n        WHEN o.quantityOrdered <= 40 THEN 'group c'\n        ELSE 'group d'\n    END AS customer_label,\n    SUM(o.quantityOrdered) AS total_quantity\nFROM \n    products AS p\nINNER JOIN\n    orderdetails AS o\nON \n    p.productCode = o.productCode\nGROUP BY \n    p.productName, \n    o.productCode, \n    o.priceEach, \n    o.quantityOrdered,\n    customer_label;\n\nselect \n     CASE\n     WHEN amount > 100000 then \"expensive\"\n     When amount <10000 then \"inexpensive\"\n     else \"other\"\n     end\n     as class_amount,\ncount(customerNumber) as id\nfrom payments\ngroup by class_amount;\n\nselect lastname, firstname,\nCASE\n    when officecode > 1 then \"Group a\"\n    when officecode < 4 then \"group b\"\n    else \"unclassify\"\n    end\n    as \"label\"\nfrom employees;\n\n\nselect\ncase\n   when quantityOrdered <= 20 then \"group a\"\n   when quantityOrdered <= 30 then \"group b\"\n   when quantityOrdered <= 40 then \"group c\"\n   else \"group d\"\n   end as customer_label, \nsum(o.quantityOrdered) as total_quantity\nfrom \n    products as p\ninner join\n    orderdetails as o\non \n    p.productcode = o.productcode\ngroup by \n     customer_label\norder by total_quantity;\n\n\n\n\n\n\n\n\n\n\n\n\n\n",
+    "options": {
+        "tabSize": 4,
+        "indentSize": 4,
+        "insertSpaces": true,
+        "defaultEOL": "LF",
+        "trimAutoWhitespace": true
+    },
+    "viewState": {
+        "cursorState": [
+            {
+                "inSelectionMode": false,
+                "selectionStart": {
+                    "lineNumber": 37,
+                    "column": 1
+                },
+                "position": {
+                    "lineNumber": 37,
+                    "column": 1
+                }
+            }
+        ],
+        "viewState": {
+            "scrollLeft": 0,
+            "firstPosition": {
+                "lineNumber": 27,
+                "column": 1
+            },
+            "firstPositionDeltaTop": 48
+        },
+        "contributionsState": {
+            "editor.contrib.folding": {},
+            "editor.contrib.wordHighlighter": false
+        }
+    },
+    "contexts": [
+        {
+            "state": {
+                "start": 1,
+                "end": 1,
+                "language": "mysql",
+                "result": {
+                    "type": "text",
+                    "text": [
+                        {
+                            "type": 2,
+                            "content": "Welcome to the MySQL Shell - DB Notebook.\n\nPress Cmd+Enter to execute the code block.\n\nExecute \\sql to switch to SQL, \\js to JavaScript and \\ts to TypeScript mode.\nExecute \\help or \\? for help;",
+                            "language": "ansi"
+                        }
+                    ]
+                },
+                "currentHeight": 28,
+                "currentSet": 1,
+                "statements": [
+                    {
+                        "delimiter": ";",
+                        "span": {
+                            "start": 0,
+                            "length": 6
+                        },
+                        "contentStart": 0,
+                        "state": 0
+                    }
+                ]
+            },
+            "data": []
+        },
+        {
+            "state": {
+                "start": 2,
+                "end": 26,
+                "language": "mysql",
+                "result": {
+                    "type": "text",
+                    "text": [
+                        {
+                            "type": 0,
+                            "index": 0,
+                            "content": "MySQL Error (1046): No database selected",
+                            "language": "ansi"
+                        }
+                    ],
+                    "executionInfo": {
+                        "text": ""
+                    }
+                },
+                "currentHeight": 28,
+                "currentSet": 1,
+                "statements": [
+                    {
+                        "delimiter": ";",
+                        "span": {
+                            "start": 0,
+                            "length": 551
+                        },
+                        "contentStart": 0,
+                        "state": 0
+                    },
+                    {
+                        "delimiter": ";",
+                        "span": {
+                            "start": 551,
+                            "length": 1
+                        },
+                        "contentStart": 550,
+                        "state": 3
+                    }
+                ]
+            },
+            "data": []
+        },
+        {
+            "state": {
+                "start": 27,
+                "end": 37,
+                "language": "mysql",
+                "result": {
+                    "type": "resultIds",
+                    "list": [
+                        "4bc03f01-2213-4759-e563-8451588896fb"
+                    ]
+                },
+                "currentHeight": 160.8359375,
+                "currentSet": 1,
+                "statements": [
+                    {
+                        "delimiter": ";",
+                        "span": {
+                            "start": 0,
+                            "length": 217
+                        },
+                        "contentStart": 0,
+                        "state": 0
+                    },
+                    {
+                        "delimiter": ";",
+                        "span": {
+                            "start": 217,
+                            "length": 1
+                        },
+                        "contentStart": 216,
+                        "state": 3
+                    }
+                ]
+            },
+            "data": [
+                {
+                    "tabId": "2",
+                    "resultId": "4bc03f01-2213-4759-e563-8451588896fb",
+                    "rows": [
+                        {
+                            "0": "inexpensive",
+                            "1": 42
+                        },
+                        {
+                            "0": "other",
+                            "1": 226
+                        },
+                        {
+                            "0": "expensive",
+                            "1": 5
+                        }
+                    ],
+                    "columns": [
+                        {
+                            "title": "class_amount",
+                            "field": "0",
+                            "dataType": {
+                                "type": 17,
+                                "characterMaximumLength": 65535,
+                                "flags": [
+                                    "BINARY",
+                                    "ASCII",
+                                    "UNICODE"
+                                ],
+                                "needsQuotes": true,
+                                "parameterFormatType": "OneOrZero"
+                            },
+                            "inPK": false,
+                            "nullable": false,
+                            "autoIncrement": false
+                        },
+                        {
+                            "title": "id",
+                            "field": "1",
+                            "dataType": {
+                                "type": 4,
+                                "flags": [
+                                    "SIGNED",
+                                    "ZEROFILL"
+                                ],
+                                "numericPrecision": 10,
+                                "parameterFormatType": "OneOrZero",
+                                "synonyms": [
+                                    "INTEGER",
+                                    "INT4"
+                                ]
+                            },
+                            "inPK": false,
+                            "nullable": false,
+                            "autoIncrement": false
+                        }
+                    ],
+                    "executionInfo": {
+                        "text": "OK, 3 records retrieved in 14.537ms"
+                    },
+                    "totalRowCount": 3,
+                    "hasMoreRows": false,
+                    "currentPage": 0,
+                    "index": 0,
+                    "sql": "select \n     CASE\n     WHEN amount > 100000 then \"expensive\"\n     When amount <10000 then \"inexpensive\"\n     else \"other\"\n     end\n     as class_amount,\ncount(customerNumber) as id\nfrom payments\ngroup by class_amount",
+                    "updatable": false
+                }
+            ]
+        },
+        {
+            "state": {
+                "start": 38,
+                "end": 47,
+                "language": "mysql",
+                "result": {
+                    "type": "text",
+                    "text": [
+                        {
+                            "type": 0,
+                            "index": 0,
+                            "content": "MySQL Error (1046): No database selected",
+                            "language": "ansi"
+                        }
+                    ],
+                    "executionInfo": {
+                        "text": ""
+                    }
+                },
+                "currentHeight": 28,
+                "currentSet": 1,
+                "statements": [
+                    {
+                        "delimiter": ";",
+                        "span": {
+                            "start": 0,
+                            "length": 171
+                        },
+                        "contentStart": 0,
+                        "state": 0
+                    },
+                    {
+                        "delimiter": ";",
+                        "span": {
+                            "start": 171,
+                            "length": 2
+                        },
+                        "contentStart": 170,
+                        "state": 3
+                    }
+                ]
+            },
+            "data": []
+        },
+        {
+            "state": {
+                "start": 48,
+                "end": 64,
+                "language": "mysql",
+                "result": {
+                    "type": "text",
+                    "text": [
+                        {
+                            "type": 0,
+                            "index": 0,
+                            "content": "MySQL Error (1046): No database selected",
+                            "language": "ansi"
+                        }
+                    ],
+                    "executionInfo": {
+                        "text": ""
+                    }
+                },
+                "currentHeight": 28,
+                "currentSet": 1,
+                "statements": [
+                    {
+                        "delimiter": ";",
+                        "span": {
+                            "start": 0,
+                            "length": 382
+                        },
+                        "contentStart": 0,
+                        "state": 0
+                    }
+                ]
+            },
+            "data": []
+        },
+        {
+            "state": {
+                "start": 65,
+                "end": 78,
+                "language": "mysql",
+                "currentSet": 1,
+                "statements": [
+                    {
+                        "delimiter": ";",
+                        "span": {
+                            "start": 0,
+                            "length": 13
+                        },
+                        "contentStart": -1,
+                        "state": 3
+                    }
+                ]
+            },
+            "data": []
+        }
+    ]
+}
