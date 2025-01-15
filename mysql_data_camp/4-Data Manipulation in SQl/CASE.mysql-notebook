@@ -30,7 +30,7 @@
                 "lineNumber": 45,
                 "column": 1
             },
-            "firstPositionDeltaTop": 0
+            "firstPositionDeltaTop": -14
         },
         "contributionsState": {
             "editor.contrib.folding": {},
@@ -121,7 +121,7 @@
                 "result": {
                     "type": "resultIds",
                     "list": [
-                        "c19fd846-8125-4983-8e69-c3ef0813002e"
+                        "c4e9ceba-7a2f-4b5d-fefa-546384e476a2"
                     ]
                 },
                 "currentHeight": 160.8359375,
@@ -150,7 +150,7 @@
             "data": [
                 {
                     "tabId": "2",
-                    "resultId": "c19fd846-8125-4983-8e69-c3ef0813002e",
+                    "resultId": "c4e9ceba-7a2f-4b5d-fefa-546384e476a2",
                     "rows": [
                         {
                             "0": "inexpensive",
