@@ -1,0 +1,574 @@
+{
+    "type": "MySQLNotebook",
+    "version": "1.0",
+    "caption": "DB Notebook",
+    "content": "\\about\nSELECT\n    customerName,\n    contactLastName,\n    city,\n    state,\n    ROW_NUMBER() OVER (PARTITION BY state ORDER BY city) AS row_num\nFROM\n    customers\nWHERE state IS NOT NULL\n",
+    "options": {
+        "tabSize": 4,
+        "indentSize": 4,
+        "insertSpaces": true,
+        "defaultEOL": "LF",
+        "trimAutoWhitespace": true
+    },
+    "viewState": {
+        "cursorState": [
+            {
+                "inSelectionMode": false,
+                "selectionStart": {
+                    "lineNumber": 11,
+                    "column": 1
+                },
+                "position": {
+                    "lineNumber": 11,
+                    "column": 1
+                }
+            }
+        ],
+        "viewState": {
+            "scrollLeft": 0,
+            "firstPosition": {
+                "lineNumber": 1,
+                "column": 1
+            },
+            "firstPositionDeltaTop": 0
+        },
+        "contributionsState": {
+            "editor.contrib.folding": {},
+            "editor.contrib.wordHighlighter": false
+        }
+    },
+    "contexts": [
+        {
+            "state": {
+                "start": 1,
+                "end": 1,
+                "language": "mysql",
+                "result": {
+                    "type": "text",
+                    "text": [
+                        {
+                            "type": 2,
+                            "content": "Welcome to the MySQL Shell - DB Notebook.\n\nPress Cmd+Enter to execute the code block.\n\nExecute \\sql to switch to SQL, \\js to JavaScript and \\ts to TypeScript mode.\nExecute \\help or \\? for help;",
+                            "language": "ansi"
+                        }
+                    ]
+                },
+                "currentHeight": 104,
+                "currentSet": 1,
+                "statements": [
+                    {
+                        "delimiter": ";",
+                        "span": {
+                            "start": 0,
+                            "length": 6
+                        },
+                        "contentStart": 0,
+                        "state": 0
+                    }
+                ]
+            },
+            "data": []
+        },
+        {
+            "state": {
+                "start": 2,
+                "end": 10,
+                "language": "mysql",
+                "result": {
+                    "type": "resultIds",
+                    "list": [
+                        "052546f1-cc96-48d9-8b7f-e6dcd97b79c5"
+                    ]
+                },
+                "currentHeight": 352,
+                "currentSet": 1,
+                "statements": [
+                    {
+                        "delimiter": ";",
+                        "span": {
+                            "start": 0,
+                            "length": 177
+                        },
+                        "contentStart": 0,
+                        "state": 3
+                    }
+                ]
+            },
+            "data": [
+                {
+                    "tabId": "2",
+                    "resultId": "052546f1-cc96-48d9-8b7f-e6dcd97b79c5",
+                    "rows": [
+                        {
+                            "0": "Royal Canadian Collectables, Ltd.",
+                            "1": "Lincoln",
+                            "2": "Tsawassen",
+                            "3": "BC",
+                            "4": 1
+                        },
+                        {
+                            "0": "Canadian Gift Exchange Network",
+                            "1": "Tamuri",
+                            "2": "Vancouver",
+                            "3": "BC",
+                            "4": 2
+                        },
+                        {
+                            "0": "Signal Collectibles Ltd.",
+                            "1": "Taylor",
+                            "2": "Brisbane",
+                            "3": "CA",
+                            "4": 1
+                        },
+                        {
+                            "0": "West Coast Collectables Co.",
+                            "1": "Thompson",
+                            "2": "Burbank",
+                            "3": "CA",
+                            "4": 2
+                        },
+                        {
+                            "0": "Technics Stores Inc.",
+                            "1": "Hashimoto",
+                            "2": "Burlingame",
+                            "3": "CA",
+                            "4": 3
+                        },
+                        {
+                            "0": "Boards & Toys Co.",
+                            "1": "Young",
+                            "2": "Glendale",
+                            "3": "CA",
+                            "4": 4
+                        },
+                        {
+                            "0": "Men 'R' US Retailers, Ltd.",
+                            "1": "Chandler",
+                            "2": "Los Angeles",
+                            "3": "CA",
+                            "4": 5
+                        },
+                        {
+                            "0": "Toys4GrownUps.com",
+                            "1": "Young",
+                            "2": "Pasadena",
+                            "3": "CA",
+                            "4": 6
+                        },
+                        {
+                            "0": "Collectable Mini Designs Co.",
+                            "1": "Thompson",
+                            "2": "San Diego",
+                            "3": "CA",
+                            "4": 7
+                        },
+                        {
+                            "0": "Mini Wheels Co.",
+                            "1": "Murphy",
+                            "2": "San Francisco",
+                            "3": "CA",
+                            "4": 8
+                        },
+                        {
+                            "0": "Corporate Gift Ideas Co.",
+                            "1": "Brown",
+                            "2": "San Francisco",
+                            "3": "CA",
+                            "4": 9
+                        },
+                        {
+                            "0": "The Sharp Gifts Warehouse",
+                            "1": "Frick",
+                            "2": "San Jose",
+                            "3": "CA",
+                            "4": 10
+                        },
+                        {
+                            "0": "Mini Gifts Distributors Ltd.",
+                            "1": "Nelson",
+                            "2": "San Rafael",
+                            "3": "CA",
+                            "4": 11
+                        },
+                        {
+                            "0": "Asian Treasures, Inc.",
+                            "1": "McKenna",
+                            "2": "Cork",
+                            "3": "Co. Cork",
+                            "4": 1
+                        },
+                        {
+                            "0": "Gift Depot Inc.",
+                            "1": "King",
+                            "2": "Bridgewater",
+                            "3": "CT",
+                            "4": 1
+                        },
+                        {
+                            "0": "Gift Ideas Corp.",
+                            "1": "Lewis",
+                            "2": "Glendale",
+                            "3": "CT",
+                            "4": 2
+                        },
+                        {
+                            "0": "Super Scale Inc.",
+                            "1": "Murphy",
+                            "2": "New Haven",
+                            "3": "CT",
+                            "4": 3
+                        },
+                        {
+                            "0": "American Souvenirs Inc",
+                            "1": "Franco",
+                            "2": "New Haven",
+                            "3": "CT",
+                            "4": 4
+                        },
+                        {
+                            "0": "giftsbymail.co.uk",
+                            "1": "Bennett",
+                            "2": "Cowes",
+                            "3": "Isle of Wight",
+                            "4": 1
+                        },
+                        {
+                            "0": "Diecast Collectables",
+                            "1": "Franco",
+                            "2": "Boston",
+                            "3": "MA",
+                            "4": 1
+                        },
+                        {
+                            "0": "Gifts4AllAges.com",
+                            "1": "Yoshido",
+                            "2": "Boston",
+                            "3": "MA",
+                            "4": 2
+                        },
+                        {
+                            "0": "Collectables For Less Inc.",
+                            "1": "Nelson",
+                            "2": "Brickhaven",
+                            "3": "MA",
+                            "4": 3
+                        },
+                        {
+                            "0": "Auto-Moto Classics Inc.",
+                            "1": "Taylor",
+                            "2": "Brickhaven",
+                            "3": "MA",
+                            "4": 4
+                        },
+                        {
+                            "0": "Online Mini Collectables",
+                            "1": "Barajas",
+                            "2": "Brickhaven",
+                            "3": "MA",
+                            "4": 5
+                        },
+                        {
+                            "0": "Marta's Replicas Co.",
+                            "1": "Hernandez",
+                            "2": "Cambridge",
+                            "3": "MA",
+                            "4": 6
+                        },
+                        {
+                            "0": "Cambridge Collectables Co.",
+                            "1": "Tseng",
+                            "2": "Cambridge",
+                            "3": "MA",
+                            "4": 7
+                        },
+                        {
+                            "0": "Mini Creations Ltd.",
+                            "1": "Huang",
+                            "2": "New Bedford",
+                            "3": "MA",
+                            "4": 8
+                        },
+                        {
+                            "0": "FunGiftIdeas.com",
+                            "1": "Benitez",
+                            "2": "New Bedford",
+                            "3": "MA",
+                            "4": 9
+                        },
+                        {
+                            "0": "Online Diecast Creations Co.",
+                            "1": "Young",
+                            "2": "Nashua",
+                            "3": "NH",
+                            "4": 1
+                        },
+                        {
+                            "0": "Tekni Collectables Inc.",
+                            "1": "Brown",
+                            "2": "Newark",
+                            "3": "NJ",
+                            "4": 1
+                        },
+                        {
+                            "0": "Souveniers And Things Co.",
+                            "1": "Huxley",
+                            "2": "Chatswood",
+                            "3": "NSW",
+                            "4": 1
+                        },
+                        {
+                            "0": "Anna's Decorations, Ltd",
+                            "1": "O'Hara",
+                            "2": "North Sydney",
+                            "3": "NSW",
+                            "4": 2
+                        },
+                        {
+                            "0": "Signal Gift Stores",
+                            "1": "King",
+                            "2": "Las Vegas",
+                            "3": "NV",
+                            "4": 1
+                        },
+                        {
+                            "0": "Vitachrome Inc.",
+                            "1": "Frick",
+                            "2": "NYC",
+                            "3": "NY",
+                            "4": 1
+                        },
+                        {
+                            "0": "Classic Legends Inc.",
+                            "1": "Hernandez",
+                            "2": "NYC",
+                            "3": "NY",
+                            "4": 2
+                        },
+                        {
+                            "0": "Muscle Machine Inc",
+                            "1": "Young",
+                            "2": "NYC",
+                            "3": "NY",
+                            "4": 3
+                        },
+                        {
+                            "0": "Microscale Inc.",
+                            "1": "Choi",
+                            "2": "NYC",
+                            "3": "NY",
+                            "4": 4
+                        },
+                        {
+                            "0": "Land of Toys Inc.",
+                            "1": "Lee",
+                            "2": "NYC",
+                            "3": "NY",
+                            "4": 5
+                        },
+                        {
+                            "0": "Mini Classics",
+                            "1": "Frick",
+                            "2": "White Plains",
+                            "3": "NY",
+                            "4": 6
+                        },
+                        {
+                            "0": "Osaka Souveniers Co.",
+                            "1": "Kentary",
+                            "2": "Kita-ku",
+                            "3": "Osaka",
+                            "4": 1
+                        },
+                        {
+                            "0": "Diecast Classics Inc.",
+                            "1": "Leong",
+                            "2": "Allentown",
+                            "3": "PA",
+                            "4": 1
+                        },
+                        {
+                            "0": "Classic Gift Ideas, Inc",
+                            "1": "Cervantes",
+                            "2": "Philadelphia",
+                            "3": "PA",
+                            "4": 2
+                        },
+                        {
+                            "0": "Motor Mint Distributors Inc.",
+                            "1": "Salazar",
+                            "2": "Philadelphia",
+                            "3": "PA",
+                            "4": 3
+                        },
+                        {
+                            "0": "SAR Distributors, Co",
+                            "1": "Kuger",
+                            "2": "Hatfield",
+                            "3": "Pretoria",
+                            "4": 1
+                        },
+                        {
+                            "0": "Québec Home Shopping Network",
+                            "1": "Fresnière",
+                            "2": "Montréal",
+                            "3": "Québec",
+                            "4": 1
+                        },
+                        {
+                            "0": "Australian Gift Network, Co",
+                            "1": "Calaghan",
+                            "2": "South Brisbane",
+                            "3": "Queensland",
+                            "4": 1
+                        },
+                        {
+                            "0": "Tokyo Collectables, Ltd",
+                            "1": "Shimamura",
+                            "2": "Minato-ku",
+                            "3": "Tokyo",
+                            "4": 1
+                        },
+                        {
+                            "0": "Australian Collectables, Ltd",
+                            "1": "Clenahan",
+                            "2": "Glen Waverly",
+                            "3": "Victoria",
+                            "4": 1
+                        },
+                        {
+                            "0": "Australian Collectors, Co.",
+                            "1": "Ferguson",
+                            "2": "Melbourne",
+                            "3": "Victoria",
+                            "4": 2
+                        }
+                    ],
+                    "columns": [
+                        {
+                            "title": "customerName",
+                            "field": "0",
+                            "dataType": {
+                                "type": 17,
+                                "characterMaximumLength": 65535,
+                                "flags": [
+                                    "BINARY",
+                                    "ASCII",
+                                    "UNICODE"
+                                ],
+                                "needsQuotes": true,
+                                "parameterFormatType": "OneOrZero"
+                            },
+                            "inPK": false,
+                            "nullable": false,
+                            "autoIncrement": false
+                        },
+                        {
+                            "title": "contactLastName",
+                            "field": "1",
+                            "dataType": {
+                                "type": 17,
+                                "characterMaximumLength": 65535,
+                                "flags": [
+                                    "BINARY",
+                                    "ASCII",
+                                    "UNICODE"
+                                ],
+                                "needsQuotes": true,
+                                "parameterFormatType": "OneOrZero"
+                            },
+                            "inPK": false,
+                            "nullable": false,
+                            "autoIncrement": false
+                        },
+                        {
+                            "title": "city",
+                            "field": "2",
+                            "dataType": {
+                                "type": 17,
+                                "characterMaximumLength": 65535,
+                                "flags": [
+                                    "BINARY",
+                                    "ASCII",
+                                    "UNICODE"
+                                ],
+                                "needsQuotes": true,
+                                "parameterFormatType": "OneOrZero"
+                            },
+                            "inPK": false,
+                            "nullable": false,
+                            "autoIncrement": false
+                        },
+                        {
+                            "title": "state",
+                            "field": "3",
+                            "dataType": {
+                                "type": 17,
+                                "characterMaximumLength": 65535,
+                                "flags": [
+                                    "BINARY",
+                                    "ASCII",
+                                    "UNICODE"
+                                ],
+                                "needsQuotes": true,
+                                "parameterFormatType": "OneOrZero"
+                            },
+                            "inPK": false,
+                            "nullable": false,
+                            "autoIncrement": false
+                        },
+                        {
+                            "title": "row_num",
+                            "field": "4",
+                            "dataType": {
+                                "type": 4,
+                                "flags": [
+                                    "SIGNED",
+                                    "ZEROFILL"
+                                ],
+                                "numericPrecision": 10,
+                                "parameterFormatType": "OneOrZero",
+                                "synonyms": [
+                                    "INTEGER",
+                                    "INT4"
+                                ]
+                            },
+                            "inPK": false,
+                            "nullable": false,
+                            "autoIncrement": false
+                        }
+                    ],
+                    "executionInfo": {
+                        "text": "OK, 49 records retrieved in 3.336ms"
+                    },
+                    "totalRowCount": 49,
+                    "hasMoreRows": false,
+                    "currentPage": 0,
+                    "index": 0,
+                    "sql": "SELECT\n    customerName,\n    contactLastName,\n    city,\n    state,\n    ROW_NUMBER() OVER (PARTITION BY state ORDER BY city) AS row_num\nFROM\n    customers\nWHERE state IS NOT NULL",
+                    "updatable": false,
+                    "fullTableName": ""
+                }
+            ]
+        },
+        {
+            "state": {
+                "start": 11,
+                "end": 11,
+                "language": "mysql",
+                "currentSet": 1,
+                "statements": [
+                    {
+                        "delimiter": ";",
+                        "span": {
+                            "start": 0,
+                            "length": 0
+                        },
+                        "contentStart": 0,
+                        "state": 0
+                    }
+                ]
+            },
+            "data": []
+        }
+    ]
+}
