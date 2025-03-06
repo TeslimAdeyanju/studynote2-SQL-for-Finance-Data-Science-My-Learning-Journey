@@ -161,3 +161,20 @@ select country,
 from detail 
 
 --
+select 
+       count(amount) as bill, state
+from payments
+inner join customers
+using(customerNumber)
+group by state,rollup(state)
+order by bill
+
+--
+
+
+
+
+
+
+
+
