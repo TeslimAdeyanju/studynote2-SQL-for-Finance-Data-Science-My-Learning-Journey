@@ -130,7 +130,65 @@ SELECT
 FROM 
   address;
   
+---
   
-  
-  
+select to_tsvector(description)
+from film
+
+
+
+---- Select the film description as a tsvector
+SELECT title, description FROM film WHERE to_tsvector(title) @@ to_tsquery('elf');
+
+
+
+
+-- Select the title and description
+SELECT title, description
+FROM film
+-- Convert the title to a tsvector and match it against the tsquery 
+WHERE to_tsvector(title) @@ to_tsquery('elf');
+
+--  
+select typname, typcategory
+from pg_type
+
+--
+
+SELECT 
+        f.title, 
+    i.inventory_id,
+    -- Determine whether the inventory is held by a customer
+      inventory_held_by_customer(i.inventory_id) AS held_by_cust 
+FROM film as f 
+        -- Join the film table to the inventory table
+        INNER JOIN inventory AS i ON f.film_id=i.film_id
+
+---
+
+CREATE EXTENSION pg_trgm;
+
+---
+SELECT * 
+FROM pg_extension;
+
+---
+
+select product_name, sub_product,
+similarity(product_name, sub_product)
+from consumer_complaint
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
