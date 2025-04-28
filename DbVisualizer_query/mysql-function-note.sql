@@ -133,25 +133,85 @@ SELECT
 FROM
     t;
 
+--- 
+select 
+group_concat(distinct country) from customers
+
+-- 
+select group_concat(distinct country order by country) from customers
 
 
+--
+select 
+group_concat(distinct country order by country separator '__') from customers
+
+--
+SELECT
+    employeeNumber,
+    firstname,
+    lastname,
+    customername
+FROM
+    employees
+        INNER JOIN
+    customers ON customers.salesRepEmployeeNumber = employees.employeeNumber
+ORDER BY
+        firstname,
+    lastname;
+
+--
+SELECT 
+    employeeNumber,
+    firstName,
+    lastName,
+    GROUP_CONCAT(DISTINCT customername
+        ORDER BY customerName separator '--') as customer_list
+FROM
+    employees
+        INNER JOIN
+    customers ON customers.salesRepEmployeeNumber = employeeNumber
+GROUP BY employeeNumber
+ORDER BY firstName , lastname;
 
 
+---
+
+SELECT 
+    GROUP_CONCAT(
+       CONCAT_WS(', ', contactLastName, contactFirstName)
+       SEPARATOR ';')
+FROM
+    customers;
+
+---
+SELECT 
+    GROUP_CONCAT(
+       CONCAT_WS(', ', contactLastName, contactFirstName)
+       SEPARATOR ';')
+FROM
+    customers;
+    
+ --
+ select customerNumber,  total_amount
+ from (
+ 
+ select customerNumber, sum(amount) as total_amount from payments group by customerNumber 
+) as summary_level_2
+having total_amount > 100000
 
 
+---
 
 
-
-
-
-
-
-
-
-
-
-
-
+SELECT 
+    customerNumber, 
+    SUM(amount) AS total_amount 
+FROM 
+    payments 
+GROUP BY 
+    customerNumber 
+HAVING 
+    total_amount > 100000
 
 
 
