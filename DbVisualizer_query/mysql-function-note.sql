@@ -211,14 +211,43 @@ FROM
 GROUP BY 
     customerNumber 
 HAVING 
-    total_amount > 100000
+    total_amount > 100000;
 
 
+---
+
+select city, count(*) as id
+from customers
+group by 1,
 
 
+select amount, max(amount), min(amount)
+from payments
+group by amount
+order by amount
 
+--
 
-
+select 
+case 
+    when amount <= 1000 then 'up to 100'
+    when amount <= 5000 then '100 - 500'
+    else '500'
+    end as 'amount_bin',
+case
+    when amount <= 1000 then 'small'
+    when amount <= 5000 then 'medium'
+    else 'large'
+    end as 'amount_category',
+count(amount) as id
+from payments
+group by amount_bin, amount_category
+ 
+    
+    
+    
+    
+    
 
 
 
