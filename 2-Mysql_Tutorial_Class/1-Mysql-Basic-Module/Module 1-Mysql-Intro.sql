@@ -1,7 +1,8 @@
 -- active database: classicmodels   (use classicmodels;)
 
 # introduction to the MySQL Subquery
- EXPLAIN SELECT
+
+SELECT
     lastName,
     firstName
 FROM
