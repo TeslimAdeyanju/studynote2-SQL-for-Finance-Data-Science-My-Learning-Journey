@@ -133,7 +133,10 @@ select orderyear
 from budget;          
             
        
-            
+select * 
+from sales
+limit 10
+
             
             
             
