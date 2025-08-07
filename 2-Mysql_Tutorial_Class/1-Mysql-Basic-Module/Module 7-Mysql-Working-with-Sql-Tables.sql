@@ -139,90 +139,42 @@ limit 10
 
             
             
-            
-            
-            
-         
-            
-            
-            
-            
-            
-            
-            
-            
-            
-            
-            
-            
-            
-            
-            
-            
-            
-            
-            
-            
-            
-            
-            
-            
-            
-            
-            
-            
-            
-            
-            
-            
-            
-            
-            
-            
-            
-            
-            
-            
-            
-            
-            
-            
-            
-            
-            
-            
-            
-            
-            
-            
-            
-            
-            
-            
-            
-            
-            
-            
-            
-            
-            
-            
-            
-            
-            
-            
-            
-            
-            
-            
-            
+-- Generate Columns
+
+
+DROP TABLE IF EXISTS contacts;
+
+CREATE TABLE contacts (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    first_name VARCHAR(50) NOT NULL,
+    last_name VARCHAR(50) NOT NULL,
+    fullname varchar(101) GENERATED ALWAYS AS (CONCAT(first_name,' ',last_name)),
+    email VARCHAR(100) NOT NULL
+);
+
+
+INSERT INTO contacts(first_name,last_name, email)
+VALUES('Teslim','Adeyanju','info@adeyanjuteslim.co.uk');
 
 
 
+SELECT 
+    *
+FROM
+    contacts;
 
 
+-- Example of creating a generated table from an existing table --
 
+ALTER Table products
+add column stockvalue Dec(10,2)
+Generated always as (buyprice*quantityinstock) STORED
 
+-- select statement 
+
+select productName,
+       round(stockvalue, 2)  as stock_value
+       from products
 
 
 
