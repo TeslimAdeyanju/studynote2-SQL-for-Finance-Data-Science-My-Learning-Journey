@@ -1,3 +1,4 @@
+--Topic: CASE
 SELECT 
     customerName, 
     COUNT(*) orderCount
@@ -93,7 +94,9 @@ FROM
 
 
 
+-- Topic: IF statement
 
+select if(1 =2, 'true', 'false')
 
 
 
