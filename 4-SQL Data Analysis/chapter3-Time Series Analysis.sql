@@ -1,3 +1,5 @@
+/* Date and Timestamp Format Conversions */
+
 --select current date 
 
 select current_date;
@@ -6,13 +8,13 @@ select localtimestamp;
 
 select current_timestamp;
 
-select now()
+select now();
 
 --function to return timestamp 
 
-select current_time
+select current_time;
 
-select localtime
+select localtime;
 
 --truncate a date 
 
@@ -25,10 +27,57 @@ SELECT date_trunc('hour','2025-08-22 22:19:58'::timestamp);
 SELECT date_trunc('week','2025-08-22 22:19:58'::timestamp);
 
 
-
 --date_part function 
 
-SELECT date_part('day', CURRENT_TIME)
+SELECT date_part('day', CURRENT_TIMEstamp);
+select date_part('month', current_timestamp);
+select date_part('year', current_timestamp);
+
+--extract function to etract day, time, and hour 
+select extract('day' from current_timestamp);
+select extract ('hour' from current_timestamp);
+
+--using to_char function to extract days in character 
+select to_char(current_timestamp, 'day');
+SELECT to_char(current_timestamp, 'month');
+
+
+--creating a date format using the make_date, makedate, date_from_parts, or date fromparts function.
+select make_date(1977, 10, 26);
+SELECT to_date(concat(2020,'-',09,'-',01), 'yyyy-mm-dd');
+
+
+/* DATE MATH */ 
+
+--selecting days from interval 
+select date('1977-10-26') - date('2025-08-26') as days;
+
+select  date('2025-08-01') - date('2025-08-26') as days;-- sutracting the date in reverse order
+
+select  date('2025-08-26') - date('2025-08-01') as days; -- we cant change the order too to avoid negative 
+
+
+--Aside the above function, we can also use 'age function' 
+
+SELECT age(date('2020-05-31'), date('2020-06-30')) as days;
+
+-- extract days, months, and years from a date intrval 
+SELECT age(date('2025-10-25'), date('1977-10-26')) as years;
+
+-- combing the code toghere
+select extract (days from age(date('2025-10-25'), date('1977-10-26'))) as years;
+
+
+-- Method 1: Extract years from AGE function
+SELECT EXTRACT(year FROM AGE(DATE('2025-10-25'), DATE('1977-10-26'))) AS years;
+
+-- Method 3: Get complete age breakdown
+SELECT 
+    EXTRACT(years FROM AGE(DATE('2025-10-25'), DATE('1977-10-26'))) AS years,
+    EXTRACT(months FROM AGE(DATE('2025-10-25'), DATE('1977-10-26'))) AS months,
+    EXTRACT(days FROM AGE(DATE('2025-10-25'), DATE('1977-10-26'))) AS days;
+
+
 
 
 
