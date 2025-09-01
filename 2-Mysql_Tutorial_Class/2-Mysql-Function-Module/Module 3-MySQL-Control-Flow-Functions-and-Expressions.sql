@@ -96,7 +96,43 @@ FROM
 
 -- Topic: IF statement
 
-select if(1 =2, 'true', 'false')
+select if(1 =2, 'true', 'false');
+
+
+-- MySQL IFNULL
+
+
+CREATE TABLE IF NOT EXISTS contacts (
+    contactid INT AUTO_INCREMENT PRIMARY KEY,
+    contactname VARCHAR(20) NOT NULL,
+    bizphone VARCHAR(15),
+    homephone VARCHAR(15)
+);
+
+--insert into the table 
+
+INSERT INTO contacts(contactname,bizphone,homephone)
+VALUES('John Doe','(541) 754-3009',NULL),
+      ('Cindy Smith',NULL,'(541) 754-3110'),
+      ('Sue Greenspan','(541) 754-3010','(541) 754-3011'),
+      ('Lily Bush',NULL,'(541) 754-3111');
+
+-- select from the table 
+
+SELECT 
+    contactName, bizphone, homephone
+FROM
+    contacts;
+    
+    
+-- using the ifnull to replace the content of the missing values 
+
+select 
+contactname,
+IFNULL(bizphone, homephone) as phone
+from contacts;
+
+
 
 
 
