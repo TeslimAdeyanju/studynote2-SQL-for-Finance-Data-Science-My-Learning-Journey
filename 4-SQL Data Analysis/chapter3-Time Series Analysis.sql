@@ -1,6 +1,6 @@
 /* Date and Timestamp Format Conversions */
 
---select current date 
+-- select current date 
 
 select current_date;
 
@@ -76,6 +76,68 @@ SELECT
     EXTRACT(years FROM AGE(DATE('2025-10-25'), DATE('1977-10-26'))) AS years,
     EXTRACT(months FROM AGE(DATE('2025-10-25'), DATE('1977-10-26'))) AS months,
     EXTRACT(days FROM AGE(DATE('2025-10-25'), DATE('1977-10-26'))) AS days;
+
+
+-- Dates interval 
+ select date('1977-10-26') + interval '48 years' as new_age;
+
+
+/* TIME MATH */
+
+-- We can add interval to time 
+SELECT time '05:00' + interval '3 hours' as new_time;
+
+-- we can subtract interval from time too 
+SELECT time '05:00' - interval '3 hours' as new_time;
+
+-- mutltiplication of time and interval 
+SELECT time '05:00' * 2 as time_multiplied;
+
+--Intervals can also be multiplied, resulting in a time value:
+SELECT interval '1 second' * 2000 as interval_multiplied;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
