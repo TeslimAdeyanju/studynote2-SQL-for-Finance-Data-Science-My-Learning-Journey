@@ -30,6 +30,46 @@ SELECT
         INTERVAL '1:1' MINUTE_SECOND) result;
         
    
---     
+-- MySQL DATEDIFF() Function
+
+select datediff('1977-10-26', '2025-09-04') as age;
+
+SELECT 
+  orderNumber, 
+  DATEDIFF(requiredDate, shippedDate) daysLeft 
+FROM 
+  orders 
+ORDER BY 
+  daysLeft DESC;  
+        
+-- another examples 
+SELECT 
+  orderNumber, 
+  DATEDIFF(requiredDate, orderDate) remainingDays 
+FROM 
+  orders 
+WHERE 
+  status = 'In Process' 
+ORDER BY 
+  remainingDays;        
+        
+-- usinf the dateddii with ifnull
+
+SELECT 
+  orderNumber, 
+  IFNULL(DATEDIFF(shippedDate, orderDate), 'Not Available') orderToShip 
+FROM 
+  orders 
+ORDER BY 
+  orderDate DESC;
+        
+        
+        
+        
+        
+        
+        
+        
+        
         
         
