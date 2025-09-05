@@ -9,6 +9,7 @@ select DISTINCT prod_id
 from orderitems
 limit 7;
 
---question 3
+-- question 3
 
 select * from customers
+
