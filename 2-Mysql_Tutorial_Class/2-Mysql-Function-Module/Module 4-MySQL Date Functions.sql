@@ -64,12 +64,86 @@ ORDER BY
   orderDate DESC;
         
         
+--  MySQL TIMEDIFF() Function
+
+select timediff('12:00:00', '10:00:00') as diff;
+
+-- using the timediff to get a difference btw two time 
+
+select 
+     orderNumber, 
+     timediff(shippedDate, orderDate) as shiptime
+from orders;
+
+
+-- Using time_format 
+select orderNumber, 
+     time_format(timediff(shippedDate, orderDate), '%H hours %i minutes')  as shiptime
+from orders;
+
+
+
+/* MySQL TIMESTAMPADD() Function */
+
+SELECT TIMESTAMPADD(DAY, 7, '2025-01-01 15:30:30') AS time_day
         
+      
+      
+/*   MySQL QUARTER() Function */ 
+      
+SELECT 
+  QUARTER(orderDate) quarter, 
+  COUNT(*) orderCount 
+FROM 
+  orders 
+WHERE 
+  year(orderDate) = 2004 
+GROUP BY 
+  QUARTER(orderDate);
         
-        
-        
-        
-        
-        
-        
+ 
+ 
+ -- Example 2 
+ SELECT 
+  QUARTER(orderDate) quarter, 
+  COUNT(*) orderCount 
+FROM 
+  orders 
+WHERE 
+  year(orderDate) = 2004 
+GROUP BY 
+  QUARTER(orderDate);
+ 
+      
+
+ -- MySQL MONTH() Function
+
+SELECT 
+  MONTH(orderDate) month, 
+  ROUND(
+    SUM(quantityOrdered * priceEach)
+  ) subtotal 
+FROM 
+  orders 
+  INNER JOIN orderdetails USING (orderNumber) 
+WHERE 
+  YEAR(orderDate) = 2004 
+GROUP BY 
+  month;  
+  
+  
+ -- day of the month 
+ SELECT 
+  DAY(orderdate) dayofmonth, 
+  COUNT(*) 
+FROM 
+  orders 
+WHERE 
+  YEAR(orderdate) = 2004 
+GROUP BY 
+  dayofmonth 
+ORDER BY 
+  dayofmonth;
+  
+ 
         

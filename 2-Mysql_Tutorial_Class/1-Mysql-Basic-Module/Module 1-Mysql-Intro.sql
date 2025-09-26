@@ -303,8 +303,206 @@ WHERE
 
 
 
+SELECT
+        customername,
+        country
+FROM
+        customers
+WHERE country = 'USA' OR
+      country = 'France';
+      
+      
+      
+SELECT   
+        customername, 
+        country, 
+        creditLimit
+FROM   
+        customers
+WHERE(country = 'USA' OR country = 'France')
+          AND creditlimit > 100000;
+          
+          
+SELECT    
+    customername, 
+    country, 
+    creditLimit
+FROM    
+    customers
+WHERE 
+    country = 'USA'
+    OR country = 'France'
+    AND creditlimit > 100000;
+
+SELECT
+    lastName,
+    firstName,
+    jobTitle,
+    officeCode
+FROM
+    employees
+WHERE
+    jobtitle = 'Sales Rep' OR
+    officeCode = 1
+ORDER BY
+    officeCode ,
+    jobTitle;
+    
+    
+SELECT
+    lastname,
+    firstname,
+    jobtitle,
+    officeCode
+FROM
+    employees
+WHERE
+    jobtitle = 'Sales Rep' AND
+    officeCode = 1;
+
+SELECT
+    customername,
+    country,
+    state
+FROM
+    customers
+WHERE
+    country = 'USA' AND
+    state = 'CA';
+    
+    
+SELECT 
+    customername, 
+    country, 
+    state, 
+    creditlimit
+FROM
+    customers
+WHERE
+    country = 'USA' AND 
+    state = 'CA' AND 
+    creditlimit > 100000;
+    
+    
+    
+SELECT
+    productCode,
+    productName,
+    buyPrice
+FROM
+    products
+WHERE
+    buyPrice BETWEEN 90 AND 100;
 
 
+SELECT 
+    productCode, 
+    productName, 
+    buyPrice
+FROM
+    products
+WHERE
+    buyPrice NOT BETWEEN 20 AND 100;
+    
+    
+    
+SELECT
+   orderNumber,
+   requiredDate,
+   status
+FROM
+   orders
+WHERE
+   requireddate BETWEEN
+     CAST('2003-01-01' AS DATE) AND
+     CAST('2003-01-31' AS DATE);
+     
+     
+     
+SELECT
+    employeeNumber,
+    lastName,
+    firstName
+FROM
+    employees
+WHERE
+    firstName LIKE 'a%'; 
+    
+    
+SELECT 
+    employeeNumber, 
+    lastName, 
+    firstName
+FROM
+    employees
+WHERE
+    lastName LIKE '%on';
+     
+     
+     SELECT 
+    employeeNumber, 
+    lastName, 
+    firstName
+FROM
+    employees
+WHERE
+    lastname LIKE '%on%' or  lastname LIKE '%on';
+     
+     SELECT
+    employeeNumber,
+    lastName,
+    firstName
+FROM
+    employees
+WHERE
+    firstname LIKE 'T_m';
+     
+     
+SELECT
+    employeeNumber,
+    lastName,
+    firstName
+INTO
+@label1, @label2, @label3
+
+FROM
+    employees
+LIMIT 1;
+
+SELECT @label1, @label2, @label3
+
+     
+     
+SELECT
+    city
+INTO
+    @city
+FROM
+    customers
+WHERE
+    customerNumber = 103;
 
 
+SELECT lastName
+INTO @lname
+FROM employees
+WHERE employeeNumber = 1002
+LIMIT 1;
 
+SELECT @lname;
+
+
+SELECT employeeNumber, lastName, firstName
+INTO @empNo, @lname, @fname
+FROM employees
+WHERE jobTitle = 'Sales Rep'
+LIMIT 1;
+
+SELECT @empNo, @lname, @fname;
+
+
+select id/qty
+from inventory
+
+     
+     
