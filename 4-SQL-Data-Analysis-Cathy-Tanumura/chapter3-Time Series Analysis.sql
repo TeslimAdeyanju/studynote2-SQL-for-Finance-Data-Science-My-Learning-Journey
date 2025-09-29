@@ -99,6 +99,11 @@ SELECT interval '1 second' * 2000 as interval_multiplied;
 
 /* THE RETAIL SALES DATA SET */
 
+-- sample data for visualisation 
+select *
+from retail_sales 
+limit 100
+
 
 -- Trend of monthly retail and food services sales
 SELECT 
@@ -159,46 +164,87 @@ WHERE
     kind_of_business IN ('Men''s clothing stores' , 
                          'Women''s clothing stores');
 
-
--- extract the year aggregates for two columns 
+-- extract the year aggregates for two columns
 SELECT
     date_part('year',sales_month) AS sales_year ,
     kind_of_business ,
     SUM(sales) AS sales
-FROM 
+FROM
     retail_sales
-WHERE 
+WHERE
     kind_of_business IN ('Men''s clothing stores' ,
                          'Women''s clothing stores')
-GROUP BY 
-    sales_year, 
+GROUP BY
+    sales_year,
     kind_of_business
 
-
-
--- grouping data base on pattern 
-
+-- grouping data base on pattern
 SELECT
     date_part('year',sales_month) AS sales_year ,
-    sum(CASE when kind_of_business = 'Women''s clothing stores' then sales
-        end) as women_sales, 
-    sum(CASE when kind_of_business = 'Men''s clothing stores' then sales
-        end) as men_sales
-FROM 
+    SUM( 
+    CASE 
+        WHEN kind_of_business = 'Women''s clothing stores' 
+        THEN sales
+    END) AS women_sales,
+    SUM( 
+    CASE 
+        WHEN kind_of_business = 'Men''s clothing stores' 
+        THEN sales
+    END) AS men_sales
+FROM
     retail_sales
-WHERE 
+WHERE
     kind_of_business IN ('Men''s clothing stores' ,
                          'Women''s clothing stores')
-GROUP BY 
+GROUP BY
     sales_year
 
+-- another insight
+SELECT
+    date_part('year',sales_month) AS sales_year,
+    SUM(
+    CASE
+        WHEN kind_of_business = 'Women''s clothing stores'
+        THEN sales
+    END) - SUM(
+    CASE
+        WHEN kind_of_business = 'Men''s clothing stores'
+        THEN sales
+    END) AS womens_minus_mens
+FROM
+    retail_sales
+WHERE
+    kind_of_business IN ('Men''s clothing stores' ,
+                         'Women''s clothing stores' )
+AND sales_month <= '2019-12-01'
+GROUP BY
+    1
 
+-- Percent difference between sales at women’s and men’s clothing stores:
 
-select *
-from retail_sales 
-limit 100
-
-
+SELECT
+    sales_year ,
+    (womens_sales / mens_sales - 1) * 100 AS womens_pct_of_mens
+FROM
+    (SELECT date_part('year',sales_month) AS sales_year,
+            SUM(
+            CASE
+                WHEN kind_of_business = 'Women''s clothing stores'
+                THEN sales
+            END) AS womens_sales ,
+            SUM(
+            CASE
+                WHEN kind_of_business = 'Men''s clothing stores'
+                THEN sales
+            END) AS mens_sales
+        FROM
+            retail_sales
+        WHERE
+            kind_of_business IN ('Men''s clothing stores' ,
+                                 'Women''s clothing stores')
+        AND sales_month <= '2019-12-01'
+        GROUP BY
+            1 ) AS a;
 
 
 

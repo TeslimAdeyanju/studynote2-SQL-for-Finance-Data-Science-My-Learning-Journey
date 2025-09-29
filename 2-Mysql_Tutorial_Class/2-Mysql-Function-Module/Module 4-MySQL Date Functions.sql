@@ -146,4 +146,40 @@ ORDER BY
   dayofmonth;
   
  
+ 
+ SELECT @@lc_time_names;
+ 
+ 
+ select dayname('2025-09-25');
+ 
+ select dayname('1977-10-26')
+ 
+-- select dayname 
+SELECT 
+    dayname(orderdate) AS DAY,
+    COUNT(*)              total_orders
+FROM 
+    orders
+WHERE 
+    YEAR(orderdate) = 2004
+GROUP BY 
+    1
+ 
+-- select monthname 
+SELECT 
+    monthname(orderdate) AS DAY,
+    COUNT(*)              total_orders
+FROM 
+    orders
+WHERE 
+    YEAR(orderdate) = 2004
+GROUP BY 
+    1;
+    
+SELECT
+    SUM(CASE WHEN status = 'Shipped' THEN 1 ELSE 0 END) AS shipped_orders,
+    SUM(CASE WHEN status = 'Pending' THEN 1 ELSE 0 END) AS pending_orders,
+    SUM(CASE WHEN status = 'Cancelled' THEN 1 ELSE 0 END) AS cancelled_orders,
+    COUNT(*) AS total_orders
+FROM orders;
         
