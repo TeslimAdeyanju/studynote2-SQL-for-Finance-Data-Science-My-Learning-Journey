@@ -33,10 +33,26 @@ FROM
 
 -- topic: MySQL CONCAT_WS() Function
 
-SELECT CONCAT_WS(' ', firstName, lastName) full_name,
-      CONCAT(' ', firstName, lastName) full_name_2
+SELECT CONCAT_WS(' ', firstName, lastName) full_name1,
+      CONCAT(firstName," ", lastName) full_name_2
 FROM employees
 ORDER BY lastName;
+
+
+-- using conc_w for null 
+SELECT
+  city,
+  state,
+  CONCAT(city, ',', state) city_state_using_concat,
+  concat_ws( ' ', city,state) city_state_using_concat_ws
+FROM
+  customers;
+
+
+
+
+
+
 
 
 --MySQL INSTR() Function
@@ -107,7 +123,9 @@ SELECT
 
 
 
-
+ -- Topic Concatenation Functions
+ 
+ 
 
 
 
