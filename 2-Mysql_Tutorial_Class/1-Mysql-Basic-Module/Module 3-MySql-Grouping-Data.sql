@@ -90,25 +90,101 @@ FROM
 GROUP BY
     month(orderNumber)
 
+-- Example 4:  Using MySQL GROUP BY with HAVING clause example
+
+   SELECT
+        year(orderDate) as year,
+        sum(quantityOrdered * priceEach) as Total_Amount
+    FROM
+        orders
+    inner JOIN
+        orderdetails
+    USING(orderNumber)
+    WHERE
+        status = 'Shipped'
+    GROUP BY
+        year
+    HAVING
+        Total_Amount > 10000
+
+--
+SELECT
+    year(orderDate) as year,
+    status,
+    sum(quantityOrdered * priceEach) as Total_Amount
+FROM
+    orders
+inner JOIN orderdetails USING(orderNumber)
+GROUP BY
+    year,
+    status
+HAVING
+    Total_Amount > 10000
 
 
 
+-- MySQL HAVING clause examples
+
+select
+    ordernumber,
+    sum(quantityOrdered) as items_Count,
+    sum(quantityOrdered * priceEach) as Total_Amount
+from
+    orderdetails
+GROUP BY
+    orderNumber
+    
+    
+ -- using the same code with HAving 
+ select
+    ordernumber,
+    sum(quantityOrdered) as items_Count,
+    sum(quantityOrdered * priceEach) as Total_Amount
+from
+    orderdetails
+GROUP BY
+    orderNumber
+HAVING
+Total_Amount > 50000
+
+-- complext code with Having 
+SELECT
+    ordernumber,
+    SUM(quantityOrdered) AS itemsCount,
+    SUM(priceeach*quantityOrdered) AS total
+FROM
+    orderdetails
+GROUP BY ordernumber
+HAVING
+    total > 1000
+    AND
+    itemsCount > 600;
+
+
+--
+select
+    orderdetails.orderNumber,
+    orders.status,
+    sum(quantityOrdered * priceEach) as Total_Amount
+from
+    orderdetails
+inner JOIN orders USING(orderNumber)
+GROUP BY
+    orderdetails.orderNumber,
+    orders.status
+HAVING
+    status = 'Shipped'
+    AND
+    Total_Amount > 1500;
 
 
 
+-- select product base on count 
 
-
-
-
-
-
-
-
-
-
-
-
-
+select year(paymentdate), count(*)
+from payments
+group by year(paymentdate)
+having 
 
 
 
