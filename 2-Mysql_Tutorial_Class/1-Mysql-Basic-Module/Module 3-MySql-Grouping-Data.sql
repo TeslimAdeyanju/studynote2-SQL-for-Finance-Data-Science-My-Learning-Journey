@@ -181,14 +181,24 @@ HAVING
 
 -- select product base on count 
 
-select year(paymentdate), count(*)
-from payments
-group by year(paymentdate)
-having 
+select customername, count(*) as order_count
+from orders 
+join customers using (customernumber)
+group by customername
+having count(*) > 4
+order by order_count
 
 
+-- Usin the Rollup
 
-
+SELECT
+    orderYear, productLine,
+    SUM(orderValue) totalOrderValue
+FROM
+    sales
+GROUP BY
+    orderYear, productline
+WITH ROLLUP;
 
 
 
