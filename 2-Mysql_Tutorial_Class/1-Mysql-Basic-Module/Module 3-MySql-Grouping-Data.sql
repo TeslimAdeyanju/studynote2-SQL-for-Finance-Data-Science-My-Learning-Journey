@@ -200,8 +200,44 @@ GROUP BY
     orderYear, productline
 WITH ROLLUP;
 
+--
+
+SELECT
+    productLine,orderYear,
+    SUM(orderValue) totalOrderValue
+FROM
+    sales
+GROUP BY
+    productline, orderYear
+WITH ROLLUP;
 
 
+--
 
+SELECT 
+    orderYear,
+    productLine, 
+    SUM(orderValue) totalOrderValue,
+    GROUPING(orderYear),
+    GROUPING(productLine)
+FROM
+    sales
+GROUP BY 
+    orderYear,
+    productline
+WITH ROLLUP;
+
+--
+
+SELECT 
+    city, 
+    YEAR(paymentdate) AS YEAR, 
+    COUNT(*) AS count_city,
+    grouping(city), grouping(YEAR(paymentdate))
+FROM payments
+JOIN 
+    customers USING (customerNumber) 
+GROUP BY city, YEAR(paymentdate)
+with rollup
 
 

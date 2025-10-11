@@ -90,3 +90,88 @@ SELECT
     quarter,
     SUM(sales) OVER (PARTITION BY region) AS total_sales_region
 FROM sales_data;
+
+--
+
+SELECT
+    department,
+    employee_name,
+    salary,
+    sum(salary) OVER (PARTITION BY department) AS dept_avg_salary; 
+FROM employees;
+
+--
+SELECT 
+    YEAR(paymentDate) AS year, 
+    amount, 
+    FORMAT(
+        AVG(amount) OVER (PARTITION BY YEAR(paymentDate)), 
+        2
+    ) AS avg_amt
+FROM 
+    payments
+group by YEAR(paymentDate)
+
+--
+SELECT
+    department,
+    format(avg(salary),2) as avg_salary
+FROM employees
+group by department;
+
+--
+SELECT
+    region, sales
+    quarter,
+    SUM(sales) OVER (PARTITION BY region) AS total_sales_region
+FROM sales_data;
+
+
+--
+SELECT
+    customer_id,
+    order_id,
+    COUNT(order_id) OVER (PARTITION BY customer_id) AS total_orders
+FROM sales_data;
+
+--
+SELECT
+    department,
+    employee_name,
+    salary,
+    YEAR(hire_date) AS hire_year,
+    AVG(salary) OVER (
+        PARTITION BY department, YEAR(hire_date)
+    ) AS dept_year_avg_salary
+FROM employees;
+
+
+--
+SELECT
+    region,
+    quarter,
+    order_id,
+    sales,
+    SUM(sales) OVER (
+        PARTITION BY region, quarter
+    ) AS total_sales_region_quarter
+FROM sales_data
+ORDER BY region, quarter, order_id;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
