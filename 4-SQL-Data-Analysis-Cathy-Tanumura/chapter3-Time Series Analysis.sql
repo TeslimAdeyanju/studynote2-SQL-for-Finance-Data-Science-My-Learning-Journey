@@ -1,280 +1,291 @@
-/* Date and Timestamp Format Conversions */
+/*
+--------------------------------------------------------------------------------
+PostgreSQL Date/Time Fundamentals + Retail Sales Analysis
+Author: Teslim Adeyanju
+Dialect: PostgreSQL 12+ (tested on 15/16)
+Purpose: Handy reference for date/timestamp functions, date/time arithmetic,
+         formatting, and retail_sales analytics with GROUP BY + window functions.
+--------------------------------------------------------------------------------
+*/
 
--- select current date 
+-- ============================================================================
+-- 1) CURRENT DATE/TIME
+-- ============================================================================
 
-select current_date;
+-- Current date (DATE)
+SELECT CURRENT_DATE AS current_date;
 
-select localtimestamp;
+-- Local timestamp (TIMESTAMP WITHOUT TIME ZONE)
+SELECT LOCALTIMESTAMP AS local_ts;
 
-select current_timestamp;
+-- Current timestamp (TIMESTAMP WITH TIME ZONE)
+SELECT CURRENT_TIMESTAMP AS current_timestamptz;
 
-select now();
+-- NOW() is equivalent to current_timestamp in Postgres
+SELECT NOW() AS now_timestamptz;
 
---function to return timestamp 
+-- Current time (TIME WITHOUT TIME ZONE)
+SELECT CURRENT_TIME AS current_time;
 
-select current_time;
-
-select localtime;
-
---truncate a date 
-
-SELECT date_trunc('year','2025-08-22 22:19:58'::timestamp);
-
-SELECT date_trunc('day','2025-08-22 22:19:58'::timestamp);
-
-SELECT date_trunc('hour','2025-08-22 22:19:58'::timestamp);
-
-SELECT date_trunc('week','2025-08-22 22:19:58'::timestamp);
-
-
---date_part function 
-
-SELECT date_part('day', CURRENT_TIMEstamp);
-select date_part('month', current_timestamp);
-select date_part('year', current_timestamp);
-
---extract function to etract day, time, and hour 
-select extract('day' from current_timestamp);
-select extract ('hour' from current_timestamp);
-
---using to_char function to extract days in character 
-select to_char(current_timestamp, 'day');
-SELECT to_char(current_timestamp, 'month');
+-- Local time (TIME WITHOUT TIME ZONE)
+SELECT LOCALTIME AS local_time;
 
 
---creating a date format using the make_date, makedate, date_from_parts, or date fromparts function.
-select make_date(1977, 10, 26);
-SELECT to_date(concat(2020,'-',09,'-',01), 'yyyy-mm-dd');
+-- ============================================================================
+-- 2) TRUNCATING TIMESTAMPS
+--    NOTE: date_trunc returns TIMESTAMP/TIMESTAMPTZ at the chosen precision.
+--    Week truncation uses Monday as the first day of the week in Postgres.
+-- ============================================================================
+
+SELECT DATE_TRUNC('year', TIMESTAMP '2025-08-22 22:19:58') AS trunc_year;
+SELECT DATE_TRUNC('day',  TIMESTAMP '2025-08-22 22:19:58') AS trunc_day;
+SELECT DATE_TRUNC('hour', TIMESTAMP '2025-08-22 22:19:58') AS trunc_hour;
+SELECT DATE_TRUNC('week', TIMESTAMP '2025-08-22 22:19:58') AS trunc_week;
 
 
-/* DATE MATH */ 
+-- ============================================================================
+-- 3) EXTRACTING PARTS FROM TIMESTAMP
+--    date_part(text, timestamp) and EXTRACT(field FROM source) are equivalent.
+--    Prefer EXTRACT for ANSI-like syntax. Field names are typically singular.
+-- ============================================================================
 
---selecting days from interval 
-select date('1977-10-26') - date('2025-08-26') as days;
+-- Using date_part (returns DOUBLE PRECISION)
+SELECT DATE_PART('day',   CURRENT_TIMESTAMP)  AS day_of_month;
+SELECT DATE_PART('month', CURRENT_TIMESTAMP)  AS month_of_year;
+SELECT DATE_PART('year',  CURRENT_TIMESTAMP)  AS year_number;
 
-select  date('2025-08-01') - date('2025-08-26') as days;-- sutracting the date in reverse order
-
-select  date('2025-08-26') - date('2025-08-01') as days; -- we cant change the order too to avoid negative 
-
-
---Aside the above function, we can also use 'age function' 
-
-SELECT age(date('2020-05-31'), date('2020-06-30')) as days;
-
--- extract days, months, and years from a date intrval 
-SELECT age(date('2025-10-25'), date('1977-10-26')) as years;
-
--- combing the code toghere
-select extract (days from age(date('2025-10-25'), date('1977-10-26'))) as years;
+-- Using EXTRACT
+SELECT EXTRACT(DAY   FROM CURRENT_TIMESTAMP) AS day_of_month_v2;
+SELECT EXTRACT(HOUR  FROM CURRENT_TIMESTAMP) AS hour_of_day;
 
 
--- Method 1: Extract years from AGE function
-SELECT EXTRACT(year FROM AGE(DATE('2025-10-25'), DATE('1977-10-26'))) AS years;
+-- ============================================================================
+-- 4) HUMAN-READABLE FORMATTING (to_char)
+--    See: https://www.postgresql.org/docs/current/functions-formatting.html
+--    'Day'/'Month' (capitalized) give capitalized names; 'day'/'month' are padded.
+-- ============================================================================
 
--- Method 3: Get complete age breakdown
-SELECT 
-    EXTRACT(years FROM AGE(DATE('2025-10-25'), DATE('1977-10-26'))) AS years,
-    EXTRACT(months FROM AGE(DATE('2025-10-25'), DATE('1977-10-26'))) AS months,
-    EXTRACT(days FROM AGE(DATE('2025-10-25'), DATE('1977-10-26'))) AS days;
-
-
--- Dates interval 
- select date('1977-10-26') + interval '48 years' as new_age;
+SELECT TO_CHAR(CURRENT_TIMESTAMP, 'Day')   AS day_name;
+SELECT TO_CHAR(CURRENT_TIMESTAMP, 'Month') AS month_name;
 
 
-/* TIME MATH */
+-- ============================================================================
+-- 5) CONSTRUCTING / PARSING DATES
+-- ============================================================================
 
--- We can add interval to time 
-SELECT time '05:00' + interval '3 hours' as new_time;
+-- Construct a DATE directly
+SELECT MAKE_DATE(1977, 10, 26) AS birthday;
 
--- we can subtract interval from time too 
-SELECT time '05:00' - interval '3 hours' as new_time;
-
--- mutltiplication of time and interval 
-SELECT time '05:00' * 2 as time_multiplied;
-
---Intervals can also be multiplied, resulting in a time value:
-SELECT interval '1 second' * 2000 as interval_multiplied;
+-- Parse a string into DATE with to_date (be explicit with the format mask)
+SELECT TO_DATE(CONCAT('2020','-','09','-','01'), 'YYYY-MM-DD') AS parsed_date;
 
 
-/* THE RETAIL SALES DATA SET */
+-- ============================================================================
+-- 6) DATE ARITHMETIC
+--    date - date = INTEGER (days)
+--    AGE(later, earlier) = INTERVAL (years-months-days)
+-- ============================================================================
 
--- sample data for visualisation 
-select *
-from retail_sales 
-limit 100
+-- Days between two dates (negative means the left is earlier than the right)
+SELECT DATE '1977-10-26' - DATE '2025-08-26' AS days_diff_1;
+SELECT DATE '2025-08-01' - DATE '2025-08-26' AS days_diff_2;
+SELECT DATE '2025-08-26' - DATE '2025-08-01' AS days_diff_3;
+
+-- AGE() returns an INTERVAL (years mons days) between two dates/timestamps
+SELECT AGE(DATE '2020-05-31', DATE '2020-06-30') AS age_interval_1;
+SELECT AGE(DATE '2025-10-25', DATE '1977-10-26') AS age_interval_2;
+
+-- Extract parts from AGE() (use singular fields: year, month, day)
+SELECT
+    EXTRACT(YEAR  FROM AGE(DATE '2025-10-25', DATE '1977-10-26')) AS years_part,
+    EXTRACT(MONTH FROM AGE(DATE '2025-10-25', DATE '1977-10-26')) AS months_part,
+    EXTRACT(DAY   FROM AGE(DATE '2025-10-25', DATE '1977-10-26')) AS days_part;
+
+-- Add an INTERVAL to a DATE
+SELECT DATE '1977-10-26' + INTERVAL '48 years' AS plus_48_years;
 
 
--- Trend of monthly retail and food services sales
-SELECT 
-    sales_month , 
-    sales 
-FROM 
-    retail_sales 
-WHERE 
-    kind_of_business = 'Retail and food services sales, total';
-    
--- Trend of yearly total retail and food services sales   
-SELECT 
-    date_part('year',sales_month) AS sales_year , 
-    SUM(sales)                    AS sales 
-FROM 
-    retail_sales 
-WHERE 
-    kind_of_business = 'Retail and food services sales, total' 
-GROUP BY 
-    1; 
-    
--- Comparing components
-SELECT 
-    date_part('year',sales_month) AS sales_year , 
+-- ============================================================================
+-- 7) TIME ARITHMETIC
+--    You can add/subtract INTERVALs to/from TIME values.
+--    NOTE: Multiplying a TIME by a number is NOT valid; multiply the INTERVAL.
+-- ============================================================================
+
+-- Add/subtract hours
+SELECT TIME '05:00' + INTERVAL '3 hours' AS time_plus_3h;
+SELECT TIME '05:00' - INTERVAL '3 hours' AS time_minus_3h;
+
+-- Multiply an INTERVAL (result stays INTERVAL), then add to TIME if needed
+SELECT INTERVAL '1 second' * 2000 AS interval_multiplied;           -- 2000 seconds
+SELECT TIME '05:00' + (INTERVAL '1 hour' * 2) AS time_plus_2h;      -- 07:00
+
+
+-- ============================================================================
+-- 8) RETAIL SALES ANALYSIS
+--    Table: retail_sales(sales_month DATE, kind_of_business TEXT, sales NUMERIC/DECIMAL)
+--    Tips:
+--      * Always add ORDER BY in analytics outputs for readability.
+--      * Cast to NUMERIC/DECIMAL in pct calcs to avoid integer division.
+-- ============================================================================
+
+-- Peek sample rows
+SELECT *
+FROM retail_sales
+ORDER BY sales_month, kind_of_business
+LIMIT 100;
+
+-- Monthly trend: total retail + food services
+SELECT
+    sales_month,
+    sales
+FROM retail_sales
+WHERE kind_of_business = 'Retail and food services sales, total'
+ORDER BY sales_month;
+
+-- Yearly total: retail + food services (GROUP BY year)
+SELECT
+    DATE_PART('year', sales_month) AS sales_year,
+    SUM(sales)                     AS sales
+FROM retail_sales
+WHERE kind_of_business = 'Retail and food services sales, total'
+GROUP BY 1
+ORDER BY 1;
+
+-- Yearly comparison across selected components
+SELECT
+    DATE_PART('year', sales_month) AS sales_year,
     kind_of_business,
-    SUM(sales) AS sales 
-FROM 
-    retail_sales 
-WHERE 
-    kind_of_business in ('Book stores' ,'Sporting goods stores','Hobby, toy, and game stores')
-GROUP BY 
-    1, 2; 
-    
--- Monthly trend of sales at women’s and men’s clothing stores
-SELECT 
-    sales_month , 
-    kind_of_business , 
-    sales 
-FROM 
-    retail_sales 
-WHERE 
-    kind_of_business IN ('Men''s clothing stores' , 
-                         'Women''s clothing stores');
-                         
--- using case
-SELECT 
-    sales_month , 
-    kind_of_business , 
+    SUM(sales) AS sales
+FROM retail_sales
+WHERE kind_of_business IN (
+    'Book stores',
+    'Sporting goods stores',
+    'Hobby, toy, and game stores'
+)
+GROUP BY 1, 2
+ORDER BY 1, 2;
+
+-- Monthly trend for Men’s vs Women’s clothing
+SELECT
+    sales_month,
+    kind_of_business,
+    sales
+FROM retail_sales
+WHERE kind_of_business IN ('Men''s clothing stores', 'Women''s clothing stores')
+ORDER BY sales_month, kind_of_business;
+
+-- Simple banding with CASE
+SELECT
+    sales_month,
+    kind_of_business,
     sales,
     CASE
-    WHEN sales >= 1000 then 'high_sales'
-    when sales <= 500 then 'low_sales'
-    else 'mid_sales'
-    end as insight 
-FROM 
-    retail_sales 
-WHERE 
-    kind_of_business IN ('Men''s clothing stores' , 
-                         'Women''s clothing stores');
+        WHEN sales >= 1000 THEN 'high_sales'
+        WHEN sales <= 500  THEN 'low_sales'
+        ELSE 'mid_sales'
+    END AS sales_band
+FROM retail_sales
+WHERE kind_of_business IN ('Men''s clothing stores', 'Women''s clothing stores')
+ORDER BY sales_month, kind_of_business;
 
--- extract the year aggregates for two columns
+-- Year aggregates for Men’s & Women’s clothing
 SELECT
-    date_part('year',sales_month) AS sales_year ,
-    kind_of_business ,
+    DATE_PART('year', sales_month) AS sales_year,
+    kind_of_business,
     SUM(sales) AS sales
-FROM
-    retail_sales
-WHERE
-    kind_of_business IN ('Men''s clothing stores' ,
-                         'Women''s clothing stores')
-GROUP BY
+FROM retail_sales
+WHERE kind_of_business IN ('Men''s clothing stores', 'Women''s clothing stores')
+GROUP BY 1, 2
+ORDER BY 1, 2;
+
+-- Yearly pivot-style grouping (separate totals per year)
+SELECT
+    DATE_PART('year', sales_month) AS sales_year,
+    SUM(CASE WHEN kind_of_business = 'Women''s clothing stores' THEN sales END) AS women_sales,
+    SUM(CASE WHEN kind_of_business = 'Men''s clothing stores'   THEN sales END) AS men_sales
+FROM retail_sales
+WHERE kind_of_business IN ('Men''s clothing stores', 'Women''s clothing stores')
+GROUP BY 1
+ORDER BY 1;
+
+-- Difference (Women - Men) by year up to 2019-12-01
+SELECT
+    DATE_PART('year', sales_month) AS sales_year,
+    SUM(CASE WHEN kind_of_business = 'Women''s clothing stores' THEN sales END)
+  - SUM(CASE WHEN kind_of_business = 'Men''s clothing stores'   THEN sales END)
+    AS womens_minus_mens
+FROM retail_sales
+WHERE kind_of_business IN ('Men''s clothing stores', 'Women''s clothing stores')
+  AND sales_month <= DATE '2019-12-01'
+GROUP BY 1
+ORDER BY 1;
+
+-- Percent difference between Women’s and Men’s by year (<= 2019-12-01)
+-- Use NUMERIC casts (or multiply by 100.0) to avoid integer division.
+WITH yearly AS (
+    SELECT
+        DATE_PART('year', sales_month) AS sales_year,
+        SUM(CASE WHEN kind_of_business = 'Women''s clothing stores' THEN sales END) AS womens_sales,
+        SUM(CASE WHEN kind_of_business = 'Men''s clothing stores'   THEN sales END) AS mens_sales
+    FROM retail_sales
+    WHERE kind_of_business IN ('Men''s clothing stores', 'Women''s clothing stores')
+      AND sales_month <= DATE '2019-12-01'
+    GROUP BY 1
+)
+SELECT
     sales_year,
-    kind_of_business
+    ((womens_sales::NUMERIC / mens_sales::NUMERIC) - 1) * 100.0 AS womens_pct_of_mens
+FROM yearly
+ORDER BY sales_year;
 
--- grouping data base on pattern
+-- --------------------------------------------------------------------------
+-- Percent-of-Total (same-month denominator) — JOIN approach
+-- --------------------------------------------------------------------------
+WITH base AS (
+    SELECT a.sales_month, a.kind_of_business, a.sales
+    FROM retail_sales a
+    WHERE a.kind_of_business IN ('Men''s clothing stores', 'Women''s clothing stores')
+),
+totals AS (
+    SELECT sales_month, SUM(sales) AS total_sales
+    FROM base
+    GROUP BY sales_month
+)
 SELECT
-    date_part('year',sales_month) AS sales_year ,
-    SUM( 
-    CASE 
-        WHEN kind_of_business = 'Women''s clothing stores' 
-        THEN sales
-    END) AS women_sales,
-    SUM( 
-    CASE 
-        WHEN kind_of_business = 'Men''s clothing stores' 
-        THEN sales
-    END) AS men_sales
-FROM
-    retail_sales
-WHERE
-    kind_of_business IN ('Men''s clothing stores' ,
-                         'Women''s clothing stores')
-GROUP BY
-    sales_year
+    b.sales_month,
+    b.kind_of_business,
+    b.sales,
+    (b.sales::NUMERIC * 100.0) / t.total_sales::NUMERIC AS pct_total_sales
+FROM base b
+JOIN totals t
+  ON b.sales_month = t.sales_month
+ORDER BY b.sales_month, b.kind_of_business;
 
--- another insight
+-- --------------------------------------------------------------------------
+-- Percent-of-Total — WINDOW FUNCTION approach (cleaner, no self-join)
+-- --------------------------------------------------------------------------
 SELECT
-    date_part('year',sales_month) AS sales_year,
-    SUM(
-    CASE
-        WHEN kind_of_business = 'Women''s clothing stores'
-        THEN sales
-    END) - SUM(
-    CASE
-        WHEN kind_of_business = 'Men''s clothing stores'
-        THEN sales
-    END) AS womens_minus_mens
-FROM
-    retail_sales
-WHERE
-    kind_of_business IN ('Men''s clothing stores' ,
-                         'Women''s clothing stores' )
-AND sales_month <= '2019-12-01'
-GROUP BY
-    1
+    sales_month,
+    kind_of_business,
+    sales,
+    SUM(sales) OVER (PARTITION BY sales_month)                            AS total_sales,
+    (sales::NUMERIC * 100.0) / SUM(sales) OVER (PARTITION BY sales_month) AS pct_total
+FROM retail_sales
+WHERE kind_of_business IN ('Men''s clothing stores', 'Women''s clothing stores')
+ORDER BY sales_month, kind_of_business;
 
--- Percent difference between sales at women’s and men’s clothing stores:
-
+-- --------------------------------------------------------------------------
+-- Yearly share of each category (Men vs Women) within the same year
+-- --------------------------------------------------------------------------
 SELECT
-    sales_year ,
-    (womens_sales / mens_sales - 1) * 100 AS womens_pct_of_mens
-FROM
-    (SELECT date_part('year',sales_month) AS sales_year,
-            SUM(
-            CASE
-                WHEN kind_of_business = 'Women''s clothing stores'
-                THEN sales
-            END) AS womens_sales ,
-            SUM(
-            CASE
-                WHEN kind_of_business = 'Men''s clothing stores'
-                THEN sales
-            END) AS mens_sales
-        FROM
-            retail_sales
-        WHERE
-            kind_of_business IN ('Men''s clothing stores' ,
-                                 'Women''s clothing stores')
-        AND sales_month <= '2019-12-01'
-        GROUP BY
-            1 ) AS a;
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+    sales_month,
+    kind_of_business,
+    sales,
+    SUM(sales) OVER (PARTITION BY DATE_PART('year', sales_month), kind_of_business) AS yearly_sales,
+    (sales::NUMERIC * 100.0) / SUM(sales) OVER (PARTITION BY DATE_PART('year', sales_month), kind_of_business) AS pct_yearly
+FROM retail_sales
+WHERE kind_of_business IN ('Men''s clothing stores', 'Women''s clothing stores')
+ORDER BY DATE_PART('year', sales_month), kind_of_business, sales_month;
 
 
 
