@@ -582,7 +582,7 @@
    
    /*--**3.2  COMPLETE GUIDE: MULTIPLE-ROW OPERATORS (IN, ANY, ALL)/***/
    
-   
+   -- Example 1.1: Basic IN with Simple Subquery
    /*--Business Scenario: "Find all customers who have rented films from the 'Action' category"*/
    SELECT 
           customer_id, 
@@ -599,6 +599,9 @@
           JOIN    film_category fc ON i.film_id      = fc.film_id
           JOIN    category c       ON fc.category_id = c.category_id
           WHERE   c.name                             = 'Action');
+   
+   
+   -- Example 1.2: IN with Multiple JOINs
    /*-- Business Scenario: "Find all actors who have appeared in films rented by customer_id 5"*/
    SELECT 
             a.actor_id,
@@ -620,7 +623,7 @@
    ORDER BY films_with_customer5 DESC;
    
    
-   
+   -- Example 1.3: NOT IN - Exclusion Pattern
    /*-- Business Scenario: "Find all films that have NEVER been rented"*/
    SELECT 
             f.film_id, 
@@ -635,6 +638,9 @@
             FROM    inventory i
             JOIN    rental r ON i.inventory_id = r.inventory_id )
    ORDER BY f.rental_rate DESC;
+   
+   
+   -- Example 1.4: IN with Subquery on Different Table
    /*-- Business Scenario: "Find all staff members who work at stores that have inventory of 'Horror' 
    -- films"*/
    SELECT 
@@ -653,6 +659,8 @@
           WHERE   c.name                             = 'Horror' );
    
    
+   
+   -- Example 1.5: IN with Aggregated Subquery
    /*-- Business Scenario: "Find customers who have rented films that cost exactly one of the standard 
    -- price points (0.99, 2.99, 4.99)"*/
    SELECT
@@ -671,108 +679,149 @@
             c.first_name,
             c.last_name
    ORDER BY total_rentals DESC;
-   /*--*/
-   /*-- 3.2  Complete Guide: Multiple-Row Operators (IN, ANY, ALL)*/
-   /*-- Business Scenario: "Find films more expensive than ANY film in the 'Family' category"*/
-   SELECT
-          f.film_id,
-          f.title,
-          f.rental_rate,
-          ( SELECT
-                  MIN(f2.rental_rate)
-          FROM    film AS f2
-          JOIN    film_category AS fc2 ON f2.film_id     = fc2.film_id
-          JOIN    category AS c2       ON c2.category_id = fc2.category_id
-          WHERE   c2.name                                = "Family" ) AS cheapest_family_film
-   FROM   film AS f
-   WHERE  f.rental_rate > ANY
-          ( SELECT
-                  f2.rental_rate
-          FROM    film AS f2
-          JOIN    film_category AS fc ON f2.film_id    = fc.film_id
-          JOIN    category AS c       ON c.category_id = fc.category_id
-          WHERE   c.name                               = "Family");
-   /*--DERIVED TABLE*/
-   /*-- Example 1*/
-   SELECT
-              productCode,
-              ROUND(SUM(quantityOrdered * priceEach)) AS sales
-   FROM       orderdetails
-   INNER JOIN orders 
-   USING 
-              orderNumber
-   WHERE      YEAR(shippedDate) = 2003
-   GROUP BY   productCode
-   ORDER BY   sales DESC
-   LIMIT 
-              5;
-   /*-- Example 2:*/
-   SELECT
-              productName, 
-              sales
-   FROM       (SELECT
-                         productCode,
-                         ROUND(SUM(quantityOrdered * priceEach)) AS sales
-              FROM       orderdetails
-              INNER JOIN orders 
-              USING 
-                         orderNumber
-              WHERE      YEAR(shippedDate) = 2003
-              GROUP BY   productCode
-              ORDER BY   sales DESC
-              LIMIT 
-                         5) AS top5products2003
-   INNER JOIN products 
-   USING 
-              (productCode);
-   /*-- Example 3*/
+   
+   
+ -- Example 2.1: > ANY (Greater Than At Least One)
+ --Business Scenario: "Find films more expensive than ANY film in the 'Family' category"
    SELECT 
-          customerName,
-          FORMAT(creditlimit, 2) AS formatted_creditlimit,
-          CASE WHEN creditlimit                             < 100000 
-                 THEN 'spending_below_100' WHEN creditlimit < 200000 
-                 THEN 'spending_above_100'
-                 ELSE 'check'
-          END AS spending_group
-   FROM   customers;
-   /*-- Example 4*/
-   SELECT
-              customerNumber,
-              ROUND(SUM(quantityOrdered * priceEach)) sales,
-              ( 
-              CASE WHEN SUM(quantityOrdered * priceEach) < 10000 
-                         THEN 'Silver' WHEN SUM(quantityOrdered * priceEach) BETWEEN 10000 AND 100000 
-                         THEN 'Gold' WHEN SUM(quantityOrdered * priceEach) > 100000 
-                         THEN 'Platinum'
-              END) customerGroup
-   FROM       orderdetails
-   INNER JOIN orders 
-   USING 
-              orderNumber
-   WHERE      YEAR(shippedDate) = 2003
-   GROUP BY   customerNumber;
-   /*--Example 5*/
-   SELECT
-            customerGroup,
-            COUNT(cg.customerGroup) AS groupCount
-   FROM     (SELECT
-                       customerNumber,
-                       ROUND(SUM(quantityOrdered * priceEach)) sales,
-                       ( 
-                       CASE WHEN SUM(quantityOrdered * priceEach) < 10000 
-                                  THEN 'Silver' WHEN SUM(quantityOrdered * priceEach) BETWEEN 10000 
-                                             AND 100000 
-                                  THEN 'Gold' WHEN SUM(quantityOrdered * priceEach) > 100000 
-                                  THEN 'Platinum'
-                       END) customerGroup
-            FROM       orderdetails
-            INNER JOIN orders 
-            USING 
-                       orderNumber
-            WHERE      YEAR(shippedDate) = 2003
-            GROUP BY   customerNumber) cg
-   GROUP BY cg.customerGroup;
+         f.film_id, 
+         f.title, 
+         f.rental_rate,
+         (SELECT 
+               MIN(f2.rental_rate)
+            FROM film f2
+            JOIN film_category fc2 ON f2.film_id = fc2.film_id
+            JOIN category c2       ON fc2.category_id = c2.category_id
+            WHERE c2.name = 'Family') AS cheapest_family_film
+      FROM film f
+      WHERE f.rental_rate > ANY 
+         ( SELECT 
+               f2.rental_rate
+            FROM film as f2
+            JOIN film_category as fc ON f2.film_id = fc.film_id
+            JOIN category as c       ON fc.category_id = c.category_id
+            WHERE c.name = 'Family' )
+      ORDER BY 
+         f.rental_rate;
 
+ 
+ -- Example 2.2: < ANY (Less Than At Least One)
+ -- Business Scenario: "Find films cheaper than ANY film in the 'New' category"
+   SELECT 
+         f.film_id, 
+         f.title, 
+         f.rental_rate,
+         (SELECT 
+               MAX(f2.rental_rate)
+            FROM film f2
+            JOIN film_category fc2 ON f2.film_id = fc2.film_id
+            JOIN category c2       ON fc2.category_id = c2.category_id
+            WHERE c2.name = 'New') AS most_expensive_new_film
+      FROM film f
+      WHERE f.rental_rate < ANY 
+         ( SELECT 
+               f2.rental_rate
+            FROM film f2
+            JOIN film_category fc ON f2.film_id = fc.film_id
+            JOIN category c       ON fc.category_id = c.category_id
+            WHERE c.name = 'New' )
+      ORDER BY 
+         f.rental_rate DESC; 
+ 
+ -- Example 2.3: = ANY (Equals At Least One) - Same as IN
+ -- Business Scenario: "Find actors who have appeared in 'Comedy' films"
+   SELECT 
+         a.actor_id, 
+         a.first_name, 
+         a.last_name
+      FROM actor a
+      WHERE a.actor_id = ANY 
+         ( SELECT 
+               fa.actor_id
+            FROM film_actor as fa
+            JOIN film_category as fc ON fa.film_id = fc.film_id
+            JOIN category c       ON fc.category_id = c.category_id
+            WHERE c.name = 'Comedy' );
 
+ 
+ -- Example 2.4: >= ANY (Greater Than or Equal to At Least One)
+ -- Business Scenario: "Find films with rental duration at least as long as ANY documentary film"
+   SELECT 
+         f.film_id, 
+         f.title, 
+         f.rental_duration,
+         c.name AS category,
+         (SELECT 
+               AVG(f2.rental_duration) as min
+            FROM film f2
+            JOIN film_category fc2 ON f2.film_id = fc2.film_id
+            JOIN category c2       ON fc2.category_id = c2.category_id
+            WHERE c2.name = 'Documentary' ) as ff
+      FROM film f
+      JOIN film_category fc ON f.film_id = fc.film_id
+      JOIN category c       ON fc.category_id = c.category_id
+      WHERE f.rental_duration > ANY 
+         ( SELECT 
+               f2.rental_duration
+            FROM film f2
+            JOIN film_category fc2 ON f2.film_id = fc2.film_id
+            JOIN category c2       ON fc2.category_id = c2.category_id
+            WHERE c2.name = 'Documentary' )
+      ORDER BY 
+         f.rental_duration;
 
-
+ 
+ 
+ ---Example 2.5: <> ANY (Not Equal to At Least One)
+ -- Business Scenario: "Find customers whose payment amounts differ from at least one payment made by customer_id 1"
+   SELECT 
+         DISTINCT c.customer_id, 
+         c.first_name, 
+         c.last_name,
+         COUNT(DISTINCT p.payment_id) AS payment_count
+      FROM customer c
+      JOIN payment p ON c.customer_id = p.customer_id
+      WHERE p.amount <> ANY 
+         ( SELECT 
+               p2.amount
+            FROM payment p2
+            WHERE p2.customer_id = 1 )
+      GROUP BY 
+         c.customer_id, 
+         c.first_name, 
+         c.last_name
+      ORDER BY 
+         payment_count DESC;
+ 
+ 
+ 
+ 
+ 
+ --Example 3.1: > ALL (Greater Than Every Value)
+ 
+ 
+ 
+ 
+ 
+ -- Example 3.2: < ALL (Less Than Every Value)
+ 
+ 
+ 
+ --- Example 3.3: >= ALL (Greater Than or Equal to Every Value)
+ 
+ 
+ 
+ 
+ 
+ --- Example 3.4: <= ALL (Less Than or Equal to Every Value)
+ 
+ 
+ 
+ 
+ 
+ --- Example 3.5: <> ALL (Not Equal to Every Value) - Same as NOT IN
+ 
+  
+  
+  
+  
