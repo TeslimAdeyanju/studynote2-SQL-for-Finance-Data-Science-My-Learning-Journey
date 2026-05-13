@@ -72,7 +72,16 @@
       JOIN jobs
       WHERE DEPARTMENT_ID = 90;
       
+      -- 8. Write a MySQL query to display the department ID and name and first name of manager.
       
+      
+      
+       SELECT
+         e.FIRST_NAME,
+         e.MANAGER_ID, 
+         d.DEPARTMENT_NAME
+      FROM employees AS e
+      JOIN HR_db.departments AS d ON e.DEPARTMENT_ID = d.DEPARTMENT_ID;
    
       
       
