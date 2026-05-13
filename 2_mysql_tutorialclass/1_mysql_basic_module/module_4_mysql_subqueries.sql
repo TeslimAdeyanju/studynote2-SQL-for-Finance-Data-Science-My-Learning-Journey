@@ -772,7 +772,7 @@
 
  
  
- ---Example 2.5: <> ANY (Not Equal to At Least One)
+ -- Example 2.5: <> ANY (Not Equal to At Least One)
  -- Business Scenario: "Find customers whose payment amounts differ from at least one payment made by customer_id 1"
    SELECT 
          DISTINCT c.customer_id, 
@@ -792,36 +792,138 @@
          c.last_name
       ORDER BY 
          payment_count DESC;
+
  
- 
- 
- 
- 
- --Example 3.1: > ALL (Greater Than Every Value)
- 
- 
- 
- 
+ -- Example 3.1: > ALL (Greater Than Every Value)
+ -- Business Scenario: "Find films more expensive than ALL films in the 'Documentary' category"
+    SELECT
+         f.film_id,
+         f.title,
+         f.rental_rate,
+         (SELECT
+               MAX(f2.rental_rate)
+            FROM film AS f2
+            JOIN sakila.film_category AS fc ON f2.film_id = fc.film_id
+            JOIN sakila.category AS c       ON fc.category_id = c.category_id
+            WHERE c.name = 'Documentary') AS most_expensive_documentary
+      FROM film AS f
+      WHERE f.rental_rate > ALL
+         ( SELECT
+               f2.rental_rate
+            FROM film AS f2
+            JOIN sakila.film_category AS fc ON f2.film_id = fc.film_id
+            JOIN sakila.category AS c       ON fc.category_id = c.category_id
+            WHERE c.name = 'Documentary');
+
  
  -- Example 3.2: < ALL (Less Than Every Value)
+ -- Business Scenario: "Find films cheaper than ALL films in the 'Games' category"
+      SELECT 
+         f.film_id, 
+         f.title, 
+         f.rental_rate,
+         (SELECT 
+               MIN(f2.rental_rate)
+            FROM film f2
+            JOIN film_category fc2 ON f2.film_id = fc2.film_id
+            JOIN category c2       ON fc2.category_id = c2.category_id
+            WHERE c2.name = 'Games') AS cheapest_games_film
+      FROM film f
+      WHERE f.rental_rate < ALL 
+         ( SELECT 
+               f2.rental_rate
+            FROM film f2
+            JOIN film_category fc ON f2.film_id = fc.film_id
+            JOIN category c       ON fc.category_id = c.category_id
+            WHERE c.name = 'Games' )
+      ORDER BY 
+         f.rental_rate DESC;
+
+ 
+ 
+ -- Example 3.3: >= ALL (Greater Than or Equal to Every Value)
+ -- Business Scenario: "Find actors who have appeared in at least as many films as EVERY actor in the top 5"
+   SELECT 
+         a.actor_id, 
+         a.first_name, 
+         a.last_name,
+         COUNT(fa.film_id) AS film_count
+      FROM actor a
+      JOIN film_actor fa ON a.actor_id = fa.actor_id
+      GROUP BY 
+         a.actor_id, 
+         a.first_name, 
+         a.last_name
+      HAVING COUNT(fa.film_id) >= ALL 
+         ( SELECT 
+               film_count
+            FROM ( SELECT 
+                     actor_id, 
+                     COUNT(*) AS film_count
+                  FROM film_actor
+                  GROUP BY 
+                     actor_id
+                  ORDER BY 
+                     film_count DESC
+                  LIMIT 
+                     5 ) AS top5_actors )
+      ORDER BY 
+         film_count DESC;
+
  
  
  
- --- Example 3.3: >= ALL (Greater Than or Equal to Every Value)
+ 
+ 
+ -- Example 3.4: <= ALL (Less Than or Equal to Every Value)
+ -- Business Scenario: "Find customers who have spent less than or equal to ALL customers in the top 10 spenders"
+   SELECT 
+         c.customer_id, 
+         c.first_name, 
+         c.last_name,
+         SUM(p.amount) AS total_spent
+      FROM customer c
+      JOIN payment p ON c.customer_id = p.customer_id
+      GROUP BY 
+         c.customer_id, 
+         c.first_name, 
+         c.last_name
+      HAVING SUM(p.amount) <= ALL 
+         ( SELECT 
+               total_spending
+            FROM ( SELECT 
+                     customer_id, 
+                     SUM(amount) AS total_spending
+                  FROM payment
+                  GROUP BY 
+                     customer_id
+                  ORDER BY 
+                     total_spending DESC
+                  LIMIT 
+                     10 ) AS top10_spenders )
+      ORDER BY 
+         total_spent;
+
  
  
  
  
- 
- --- Example 3.4: <= ALL (Less Than or Equal to Every Value)
- 
- 
- 
- 
- 
- --- Example 3.5: <> ALL (Not Equal to Every Value) - Same as NOT IN
- 
+ -- Example 3.5: <> ALL (Not Equal to Every Value) - Same as NOT IN
+ -- Business Scenario: "Find films that are NOT in any of the categories favored by customer_id 1"
   
-  
+   SELECT 
+         f.film_id, 
+         f.title
+      FROM film f
+      JOIN film_category fc ON f.film_id = fc.film_id
+      WHERE fc.category_id <> ALL 
+         ( SELECT 
+               DISTINCT fc2.category_id
+            FROM rental r
+            JOIN inventory i       ON r.inventory_id = i.inventory_id
+            JOIN film_category fc2 ON i.film_id = fc2.film_id
+            WHERE r.customer_id = 1 )
+      ORDER BY 
+         f.title;
   
   
