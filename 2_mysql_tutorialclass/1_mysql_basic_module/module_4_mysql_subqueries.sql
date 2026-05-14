@@ -925,5 +925,165 @@
             WHERE r.customer_id = 1 )
       ORDER BY 
          f.title;
+         
+         
+         
+  -- Example 4.1: Side-by-Side Comparison
+  -- Films more expensive than ANY Horror film (at least the cheapest)
+   SELECT 
+         'Greater than ANY Horror film' AS comparison_type,
+         f.film_id, 
+         f.title, 
+         f.rental_rate
+      FROM film f
+      WHERE f.rental_rate > ANY 
+         ( SELECT 
+               f2.rental_rate
+            FROM film f2
+            JOIN film_category fc ON f2.film_id = fc.film_id
+            JOIN category c       ON fc.category_id = c.category_id
+            WHERE c.name = 'Horror' )
+      ORDER BY 
+         f.rental_rate
+      LIMIT 
+         10;
+  
+  -- Films more expensive than ALL Horror films (even the most expensive)
+   SELECT 
+         'Greater than ALL Horror films' AS comparison_type,
+         f.film_id, 
+         f.title, 
+         f.rental_rate
+      FROM film f
+      WHERE f.rental_rate > ALL 
+         ( SELECT 
+               f2.rental_rate
+            FROM film f2
+            JOIN film_category fc ON f2.film_id = fc.film_id
+            JOIN category c       ON fc.category_id = c.category_id
+            WHERE c.name = 'Horror' )
+      ORDER BY 
+         f.rental_rate
+      LIMIT 
+         10;
+  
+  
+  -- 5. Complex Real-World Examples
+  -- Example 5.1: Combining Multiple Multiple-Row Operators**
+  -- Business Scenario:** "Find customers who have rented ALL top-rated films (rating = 5 from reviews) but NONE of the bottom-rated films"
+  
+   -- Note: Sakila doesn't have ratings table, so this is conceptual
+   SELECT 
+         c.customer_id, 
+         c.first_name, 
+         c.last_name
+      FROM customer c
+      WHERE c.customer_id IN 
+         (
+         -- Customers who rented top-rated films
+         SELECT 
+               DISTINCT r.customer_id
+            FROM rental r
+            JOIN inventory i ON r.inventory_id = i.inventory_id
+            WHERE i.film_id IN 
+               ( SELECT 
+                     film_id
+                  FROM film
+                  WHERE rating = 'PG' -- Using PG as "top rated" for example
+               ) )
+      AND c.customer_id NOT IN 
+         (
+         -- Customers who rented bottom-rated films
+         SELECT 
+               DISTINCT r.customer_id
+            FROM rental r
+            JOIN inventory i ON r.inventory_id = i.inventory_id
+            WHERE i.film_id IN 
+               ( SELECT 
+                     film_id
+                  FROM film
+                  WHERE rating = 'NC-17' -- Using NC-17 as "bottom rated"
+               ) );
+
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
   
   
