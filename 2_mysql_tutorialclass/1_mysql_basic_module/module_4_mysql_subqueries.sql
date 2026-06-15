@@ -1006,37 +1006,264 @@
                ) );
 
   
+  -- Example 5.2: Using ALL with Correlated Subquery
+  -- Business Scenario: "Find customers who have spent more on every single one of their rentals than the average rental payment"
+   SELECT 
+         c.customer_id, 
+         c.first_name, 
+         c.last_name,
+         COUNT(p.payment_id) AS payment_count,
+         MIN(p.amount) AS min_payment,
+         AVG(p.amount) AS avg_payment
+      FROM customer c
+      JOIN payment p ON c.customer_id = p.customer_id
+      GROUP BY 
+         c.customer_id, 
+         c.first_name, 
+         c.last_name
+      HAVING MIN(p.amount) < ALL 
+         ( SELECT 
+               AVG(p2.amount)
+            FROM payment p2 );
+
+  --  using ALL with Correlated Subquery and Multiple JOINs
+  --  Business Scenario: "Find films in categories that have more films than ALL categories that start with 'C'"
+   SELECT 
+         f.film_id, 
+         f.title, 
+         c.name AS category,
+         (SELECT 
+               COUNT(*)
+            FROM film_category fc2
+            WHERE fc2.category_id = c.category_id) AS films_in_category
+      FROM film f
+      JOIN film_category fc ON f.film_id = fc.film_id
+      JOIN category c       ON fc.category_id = c.category_id
+      WHERE ( SELECT 
+               COUNT(*)
+            FROM film_category fc2
+            WHERE fc2.category_id = c.category_id ) 
+         > ALL 
+         ( SELECT 
+               COUNT(*) AS film_count
+            FROM film_category fc3
+            JOIN category c3 ON fc3.category_id = c3.category_id
+            WHERE c3.name LIKE 'C%'
+            GROUP BY 
+               fc3.category_id )
+      ORDER BY 
+         films_in_category DESC;
+
+  -- Rewrite using independent (non-correlated) subqueries
+   SELECT
+         f.film_id,
+         f.title,
+         c.name AS category,
+         cc.films_in_category
+      FROM film AS f
+      JOIN film_category AS fc ON fc.film_id = f.film_id
+      JOIN category AS c       ON c.category_id = fc.category_id
+      JOIN 
+         ( SELECT
+               category_id,
+               COUNT(*) AS films_in_category
+            FROM film_category
+            GROUP BY 
+               category_id ) AS cc ON cc.category_id = c.category_id
+      WHERE cc.films_in_category > ALL 
+         ( SELECT
+               COUNT(*) AS film_count
+            FROM film_category AS fc3
+            JOIN category AS c3 ON c3.category_id = fc3.category_id
+            WHERE c3.name LIKE 'C%'
+            GROUP BY 
+               fc3.category_id )
+      ORDER BY 
+         cc.films_in_category DESC;
+  
+  
+  -- Example 5.3: Nested Multiple-Row Operators
+  -- Business Scenario: "Find films in categories that have more films than ALL categories that start with 'C'"
+   SELECT 
+         f.film_id, 
+         f.title, 
+         c.name AS category,
+         (SELECT 
+               COUNT(*)
+            FROM film_category fc2
+            WHERE fc2.category_id = c.category_id) AS films_in_category
+      FROM film f
+      JOIN film_category fc ON f.film_id = fc.film_id
+      JOIN category c       ON fc.category_id = c.category_id
+      WHERE ( SELECT 
+               COUNT(*)
+            FROM film_category fc2
+            WHERE fc2.category_id = c.category_id ) 
+         > ALL 
+         ( SELECT 
+               COUNT(*) AS film_count
+            FROM film_category fc3
+            JOIN category c3 ON fc3.category_id = c3.category_id
+            WHERE c3.name LIKE 'C%'
+            GROUP BY 
+               fc3.category_id )
+      ORDER BY 
+         films_in_category DESC;
+
+  
+   -- Outer query: retrieve customer contact details
+   SELECT
+         c.customer_id,
+         c.first_name,
+         c.last_name,
+         c.email
+      FROM customer c
+      WHERE c.customer_id IN 
+         (
+         -- Subquery: find all customer IDs who rented a Sci-Fi film
+         SELECT 
+               DISTINCT r.customer_id
+            FROM rental r
+            INNER JOIN inventory i      ON r.inventory_id = i.inventory_id
+            INNER JOIN film f           ON i.film_id = f.film_id
+            INNER JOIN film_category fc ON f.film_id = fc.film_id
+            INNER JOIN category c2      ON fc.category_id = c2.category_id
+            WHERE c2.name = 'Sci-Fi' )
+      ORDER BY 
+         c.last_name, 
+         c.first_name;
   
   
   
   
+  -- Subqueries in the WHERE Clause
+  -- Outer query: retrieve customer contact details
+  -- Business question: Marketing wants a list of all customers who have rented at least one Sci-Fi film, so they can send a targeted campaign email.
+   SELECT
+         c.customer_id,
+         c.first_name,
+         c.last_name,
+         c.email
+      FROM customer c
+      WHERE c.customer_id IN 
+         (
+         -- Subquery: find all customer IDs who rented a Sci-Fi film
+         SELECT 
+               DISTINCT r.customer_id
+            FROM rental r
+            INNER JOIN inventory i      ON r.inventory_id = i.inventory_id
+            INNER JOIN film f           ON i.film_id = f.film_id
+            INNER JOIN film_category fc ON f.film_id = fc.film_id
+            INNER JOIN category c2      ON fc.category_id = c2.category_id
+            WHERE c2.name = 'Sci-Fi' )
+      ORDER BY 
+         c.last_name, 
+         c.first_name;
   
   
   
+   -- Example A2 — Scalar with >: Films Longer Than Average
+   -- Business question: A programming manager wants to know which films run longer than the store's average, to help schedule double-feature events.
+   -- Outer query: return films exceeding the average duration
+   SELECT
+         f.film_id,
+         f.title,
+         f.length AS duration_minutes,
+         f.rating,
+         f.rental_rate
+      FROM film f
+      WHERE f.length > 
+         (
+         -- Scalar subquery: compute average length across all 1,000 films
+         SELECT 
+               AVG(f2.length)
+            FROM film f2 ) -- Returns one number, e.g. 115.27
+      ORDER BY 
+         f.length DESC;
+  
+  
+   -- Example A3 — NOT IN: Films Never Rented
+   -- Business question: Inventory management needs to identify titles that have never been rented — dead stock candidates for removal or promotion.
+   -- Outer query: return films with no rental history
+   SELECT
+         f.film_id,
+         f.title,
+         f.rental_rate,
+         f.length,
+         f.rating
+      FROM film f
+      WHERE f.film_id NOT IN 
+         (
+         -- Subquery: every film_id that has been rented at least once
+         SELECT 
+               DISTINCT i.film_id
+            FROM rental r
+            INNER JOIN inventory i ON r.inventory_id = i.inventory_id
+            WHERE i.film_id IS NOT NULL -- NULL guard: NOT IN fails silently if NULLs exist
+         )
+      ORDER BY 
+         f.rental_rate DESC;
+  
+   -- Example A4 — = with MAX: Most Recently Active Customer
+   -- Business question: Customer service wants to know which customer made the most recent rental — to send a personalised thank-you.
+   -- Outer query: return the customer linked to the latest rental date
+   SELECT
+         c.customer_id,
+         c.first_name,
+         c.last_name,
+         c.email
+      FROM customer c
+      WHERE c.customer_id = 
+         (
+         -- Scalar subquery: which customer_id made the most recent rental?
+         SELECT 
+               r.customer_id
+            FROM rental r
+            ORDER BY 
+               r.rental_date DESC
+            LIMIT 
+               1 -- Forces exactly 1 row for the = operator
+         );
+  
+   -- Example B1 — Film Revenue vs Global Average
+   -- Business question:** An analyst wants a film-by-film revenue report that shows each film's total revenue alongside the global average — in one result set, without a separate query.
+   SELECT
+         f.film_id,
+         f.title,
+         f.rental_rate,
+         -- Computed column 1: total revenue this film has generated
+         ( SELECT 
+               COALESCE(SUM(p.amount), 0)
+            FROM payment p
+            INNER JOIN rental r    ON p.rental_id = r.rental_id
+            INNER JOIN inventory i ON r.inventory_id = i.inventory_id
+            WHERE i.film_id = f.film_id -- note: this IS a correlated reference
+         ) AS film_total_revenue,
+         -- Computed column 2: global average revenue across ALL films
+         ( SELECT 
+               AVG(film_rev.total)
+            FROM ( SELECT
+                     i2.film_id,
+                     SUM(p2.amount) AS total
+                  FROM payment p2
+                  INNER JOIN rental r2    ON p2.rental_id = r2.rental_id
+                  INNER JOIN inventory i2 ON r2.inventory_id = i2.inventory_id
+                  GROUP BY 
+                     i2.film_id ) AS film_rev ) AS global_avg_film_revenue -- independent subquery: runs once
+      FROM film f
+      ORDER BY 
+         film_total_revenue DESC
+      LIMIT 
+         20;
   
   
   
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
+   SELECT
+         COALESCE(SUM(p.amount), 0)
+      FROM payment p
+      INNER JOIN rental r    ON p.rental_id = r.rental_id
+      INNER JOIN inventory i ON r.inventory_id = i.inventory_id
+      WHERE i.film_id = f.film_id
   
   
   

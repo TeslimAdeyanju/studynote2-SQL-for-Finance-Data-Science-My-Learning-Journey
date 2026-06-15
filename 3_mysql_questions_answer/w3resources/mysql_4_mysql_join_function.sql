@@ -74,8 +74,6 @@
       
       -- 8. Write a MySQL query to display the department ID and name and first name of manager.
       
-      
-      
        SELECT
          e.FIRST_NAME,
          e.MANAGER_ID, 
