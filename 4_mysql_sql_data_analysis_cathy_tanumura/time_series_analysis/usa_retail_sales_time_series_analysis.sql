@@ -12,23 +12,24 @@ Purpose: Handy reference for date/timestamp functions, date/time arithmetic,
 -- 1) CURRENT DATE/TIME
 -- ============================================================================
 
--- Current date (DATE)
-SELECT CURRENT_DATE AS current_date;
-
--- Local timestamp (TIMESTAMP WITHOUT TIME ZONE)
-SELECT LOCALTIMESTAMP AS local_ts;
-
--- Current timestamp (TIMESTAMP WITH TIME ZONE)
-SELECT CURRENT_TIMESTAMP AS current_timestamptz;
-
--- NOW() is equivalent to current_timestamp in Postgres
-SELECT NOW() AS now_timestamptz;
-
--- Current time (TIME WITHOUT TIME ZONE)
-SELECT CURRENT_TIME AS current_time;
-
--- Local time (TIME WITHOUT TIME ZONE)
-SELECT LOCALTIME AS local_time;
+   -- Current date (DATE)
+   SELECT 
+         CURRENT_DATE AS CURRENT_DATE;
+   -- Local timestamp (TIMESTAMP WITHOUT TIME ZONE)
+   SELECT 
+         LOCALTIMESTAMP AS local_ts;
+   -- Current timestamp (TIMESTAMP WITH TIME ZONE)
+   SELECT 
+         CURRENT_TIMESTAMP AS current_timestamptz;
+   -- NOW() is equivalent to current_timestamp in Postgres
+   SELECT 
+         NOW() AS now_timestamptz;
+   -- Current time (TIME WITHOUT TIME ZONE)
+   SELECT
+         CURRENT_TIME AS CURRENT_TIME;
+   -- Local time (TIME WITHOUT TIME ZONE)
+   SELECT 
+         LOCALTIME AS local_time;
 
 
 -- ============================================================================
@@ -37,10 +38,14 @@ SELECT LOCALTIME AS local_time;
 --    Week truncation uses Monday as the first day of the week in Postgres.
 -- ============================================================================
 
-SELECT DATE_TRUNC('year', TIMESTAMP '2025-08-22 22:19:58') AS trunc_year;
-SELECT DATE_TRUNC('day',  TIMESTAMP '2025-08-22 22:19:58') AS trunc_day;
-SELECT DATE_TRUNC('hour', TIMESTAMP '2025-08-22 22:19:58') AS trunc_hour;
-SELECT DATE_TRUNC('week', TIMESTAMP '2025-08-22 22:19:58') AS trunc_week;
+   SELECT 
+         DATE_TRUNC('year', TIMESTAMP '2025-08-22 22:19:58') AS trunc_year;
+   SELECT 
+         DATE_TRUNC('day', TIMESTAMP '2025-08-22 22:19:58') AS trunc_day;
+   SELECT 
+         DATE_TRUNC('hour', TIMESTAMP '2025-08-22 22:19:58') AS trunc_hour;
+   SELECT 
+         DATE_TRUNC('week', TIMESTAMP '2025-08-22 22:19:58') AS trunc_week;
 
 
 -- ============================================================================
