@@ -2,7 +2,7 @@
    -- Topic: MYSQL Derived Table 
    -- Database: classicmodels
    
-   
+  
    
    -- Example 1
    SELECT
