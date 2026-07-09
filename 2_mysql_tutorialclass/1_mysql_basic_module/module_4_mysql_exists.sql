@@ -1,5 +1,16 @@
 -- Databe: classicmodel 
 
-select orderNumber, priceEach, quantityOrdered
-from orderdetails
-where EXISTS( select 1 from orders where orders.orderNumber = orderdetails.orderNumber)
+SELECT 
+    orderNumber, 
+    priceEach, 
+    quantityOrdered
+FROM 
+    orderdetails
+WHERE 
+    EXISTS 
+    (   SELECT 
+            1 
+        FROM 
+            orders 
+        WHERE 
+            orders.orderNumber = orderdetails.orderNumber)

@@ -29,26 +29,58 @@ ON
 
 
 -- Example 2
-select a.last_name, film_count
-from (
 SELECT
-    a.actor_id,
-    a.first_name,
-    a.last_name,
-    COUNT(fa.film_id) AS film_count
-FROM 
-    actor AS a
-JOIN 
-    film_actor AS fa 
-ON 
-    a.actor_id = fa.actor_id
-GROUP BY 
-    a.actor_id,
-    a.first_name,
-    a.last_name) as info1
-    join 
+    info1.actor_id,
+    info1.first_name, info1.film_id, fm.rental_rate
+FROM
+    (   SELECT
+            a.actor_id,
+            a.first_name,
+            a.last_name,
+            fa.last_update,
+            fa.film_id
+        FROM
+            actor AS a
+        JOIN
+            film_actor AS fa
+        ON
+            a.actor_id = fa.actor_id) as info1
+JOIN
+    film AS fm
+USING
+    (film_id);
+
     
-    
+    -- 
+ SELECT
+    customerGroup,
+    COUNT(cg.customerGroup) AS groupCount
+FROM
+    (   SELECT
+            customerNumber,
+            ROUND(SUM(quantityOrdered * priceEach)) sales,
+            (
+            CASE
+                WHEN SUM(quantityOrdered * priceEach) < 10000
+                THEN 'Silver'
+                WHEN SUM(quantityOrdered * priceEach) BETWEEN 10000 AND 100000
+                THEN 'Gold'
+                WHEN SUM(quantityOrdered * priceEach) > 100000
+                THEN 'Platinum'
+            END) customerGroup
+        FROM
+            orderdetails
+        INNER JOIN
+            orders
+        USING
+            (orderNumber)
+        WHERE
+            YEAR(shippedDate) = 2003
+        GROUP BY
+            customerNumber) as cg
+GROUP BY
+    cg.customerGroup;
+
     
     
     
