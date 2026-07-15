@@ -18,48 +18,58 @@
    /*-- Example 1.2: > with MAX()*/
    /*-- Business Scenario: "Find customers who have made more payments than the customer with the 
    -- maximum number of payments"*/
-   SELECT
-            c.customer_id,
-            c.first_name,
-            c.last_name,
-            COUNT(p.payment_id) AS payment_count
-   FROM     customer AS c
-   JOIN     payment AS p
-   USING 
-            customer_id
-   GROUP BY c.customer_id,
-            c.first_name,
-            c.last_name
-   HAVING
-            COUNT(p.payment_id) >=
-            ( SELECT
-                    MAX(payment_count)
-            FROM   ( SELECT
-                             customer_id,
-                             COUNT(*) AS payment_count
-                    FROM     payment
-                    GROUP BY customer_id) AS customer_payments)
+SELECT
+    c.customer_id,
+    c.first_name,
+    c.last_name,
+    COUNT(p.payment_id) AS payment_count
+FROM 
+    customer AS c
+JOIN 
+    payment AS p
+USING
+    customer_id
+GROUP BY 
+    c.customer_id,
+    c.first_name,
+    c.last_name
+HAVING
+    COUNT(p.payment_id) >=
+    (   SELECT
+            MAX(payment_count)
+        FROM 
+            (   SELECT
+                    customer_id,
+                    COUNT(*) AS payment_count
+                FROM 
+                    payment
+                GROUP BY 
+                    customer_id) AS customer_payments)
    
-   
-   /*-- Example 1.3: > with SUM()*/
-   /*-- Business Scenario: "Find films that have generated more total revenue than the average film's 
-   -- total revenue"*/
-   SELECT
-          ROUND(AVG(film_revenue), 2)
-   FROM   ( SELECT
-                   SUM(p2.amount) AS film_revenue
-          FROM     sakila.film AS f2
-          JOIN     sakila.inventory AS i2
-          USING
-                   (film_id)
-          JOIN     sakila.rental AS r2
-          USING
-                   (inventory_id)
-          JOIN     sakila.payment AS p2
-          USING 
-                   rental_id
-          GROUP BY f2.film_id) AS average_revenue
-   
+/*-- Example 1.3: > with SUM()*/
+/*-- Business Scenario: "Find films that have generated more total revenue than the average film's
+-- total revenue"*/
+SELECT
+    ROUND(AVG(film_revenue), 2)
+FROM 
+    (   SELECT
+            SUM(p2.amount) AS film_revenue
+        FROM 
+            sakila.film AS f2
+        JOIN 
+            sakila.inventory AS i2
+        USING
+            (film_id)
+        JOIN 
+            sakila.rental AS r2
+        USING
+            (inventory_id)
+        JOIN 
+            sakila.payment AS p2
+        USING
+            rental_id
+        GROUP BY 
+            f2.film_id) AS average_revenue
    
     /*-- Example 1.4: > with MIN()*/
    --Business Scenario: "Find all films longer than the shortest film duration"
@@ -72,29 +82,35 @@
           ( SELECT 
                   MIN(LENGTH)
           FROM    film ;
-   
-   
-    /*-- Example 1.5: > with COUNT()*/
-   --Business Scenario: "Find actors who have appeared in more films than the average actor"
-   SELECT 
-            a.actor_id,
-            a.first_name,
-            a.last_name,
-            COUNT(fa.film_id) AS film_count
-   FROM     actor as a
-   JOIN     film_actor as fa ON a.actor_id = fa.actor_id
-   GROUP BY a.actor_id,
-            a.first_name,
-            a.last_name
-   HAVING 
-            COUNT(fa.film_id) > 
-            ( SELECT 
-                    AVG(film_count)
-            FROM    ( SELECT 
-                             actor_id,
-                             COUNT(*) AS film_count
-                    FROM     film_actor
-                    GROUP BY actor_id ) AS actor_film_counts );
+/*-- Example 1.5: > with COUNT()*/
+--Business Scenario: "Find actors who have appeared in more films than the average actor"
+SELECT
+    a.actor_id,
+    a.first_name,
+    a.last_name,
+    COUNT(fa.film_id) AS film_count
+FROM 
+    actor AS a
+JOIN 
+    film_actor AS fa 
+ON 
+    a.actor_id = fa.actor_id
+GROUP BY 
+    a.actor_id,
+    a.first_name,
+    a.last_name
+HAVING
+    COUNT(fa.film_id) >
+    (   SELECT
+            AVG(film_count)
+        FROM 
+            (   SELECT
+                    actor_id,
+                    COUNT(*) AS film_count
+                FROM 
+                    film_actor
+                GROUP BY 
+                    actor_id ) AS actor_film_counts );
                                                                                         
    
    
