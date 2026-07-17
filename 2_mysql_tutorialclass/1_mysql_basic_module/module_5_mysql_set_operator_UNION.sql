@@ -10,9 +10,6 @@
    FROM   customer 
     /*-- First data source: customers*/
    UNION 
-    
-    
-    
     /*-- Combine results, removing duplicates*/
    SELECT
           first_name, 
@@ -33,9 +30,6 @@
    FROM   customer
    
    UNION ALL 
-    
-   
-   
     /*-- Using UNION ALL because customer and staff emails will not overlap*/
    SELECT
             first_name,
@@ -67,60 +61,57 @@
    ORDER BY full_name ASC;
     
     
-    
-    /*-- Sort the ENTIRE combined result alphabetically*/
-    /*-- Multi-Store Revenue and Activity Analysis*/
-    /*-- Segment 1: High-spend customers from Store 1*/
-   SELECT
-            c.customer_id,
-            CONCAT(c.first_name, ' ', c.last_name) AS customer_name,
-            c.store_id,
-            SUM(p.amount) AS total_spent, 
-             /*-- Total payment amount*/
-            COUNT(r.rental_id) AS total_rentals, 
-             /*-- Number of rentals*/
-            'High Spender' AS segment 
-             /*-- Label for this group*/
-   FROM     customer c
-   JOIN     payment p ON c.customer_id = p.customer_id 
-             /*-- Link to payments*/
-   JOIN     rental r ON c.customer_id = r.customer_id 
-             /*-- Link to rentals*/
-   WHERE    c.store_id = 1 
-             /*-- Only Store 1 customers*/
-   GROUP BY c.customer_id,
-            c.first_name,
-            c.last_name,
-            c.store_id
-   HAVING
-            SUM(p.amount) > 100 
-    /*-- Filter: only those who spent over £100*/
-   UNION ALL
-   
-    
-    
-    
-    /*-- Segment 2: High-frequency renters from Store 2*/
-   SELECT
-            c.customer_id,
-            CONCAT(c.first_name, ' ', c.last_name) AS customer_name,
-            c.store_id,
-            SUM(p.amount) AS total_spent,
-            COUNT(r.rental_id) AS total_rentals,
-            'Frequent Renter' AS segment
-   FROM     customer c
-   JOIN     payment p ON c.customer_id = p.customer_id
-   JOIN     rental r  ON c.customer_id = r.customer_id
-   WHERE    c.store_id                 = 2
-   GROUP BY c.customer_id,
-            c.first_name,
-            c.last_name,
-            c.store_id
-   HAVING
-            COUNT(r.rental_id) > 20 
-             /*-- Filter: only those with more than 20 rentals*/
-   ORDER BY segment,
-            total_spent DESC;
+  /*-- Sort the ENTIRE combined result alphabetically*/
+/*-- Multi-Store Revenue and Activity Analysis*/
+/*-- Segment 1: High-spend customers from Store 1*/
+SELECT
+    c.customer_id,
+    CONCAT(c.first_name, ' ', c.last_name) AS customer_name,
+    c.store_id,
+    SUM(p.amount) AS total_spent,
+    COUNT(r.rental_id) AS total_rentals,
+    'High Spender' AS segment
+FROM customer c
+JOIN payment p 
+ON c.customer_id = p.customer_id
+JOIN rental r 
+ON c.customer_id = r.customer_id
+WHERE c.store_id = 1
+GROUP BY 
+    c.customer_id,
+    c.first_name,
+    c.last_name,
+    c.store_id
+HAVING
+    SUM(p.amount) > 100
+/*-- Filter: only those who spent over £100*/
+UNION ALL
+
+/*-- Segment 2: High-frequency renters from Store 2*/
+SELECT
+    c.customer_id,
+    CONCAT(c.first_name, ' ', c.last_name) AS customer_name,
+    c.store_id,
+    SUM(p.amount)      AS total_spent,
+    COUNT(r.rental_id) AS total_rentals,
+    'Frequent Renter'  AS segment
+FROM customer c
+JOIN payment p 
+ON c.customer_id = p.customer_id
+JOIN rental r 
+ON c.customer_id = r.customer_id
+WHERE c.store_id = 2
+GROUP BY 
+    c.customer_id,
+    c.first_name,
+    c.last_name,
+    c.store_id
+HAVING
+    COUNT(r.rental_id) > 20
+    /*-- Filter: only those with more than 20 rentals*/
+ORDER BY 
+    segment,
+    total_spent DESC;
     
     
     
@@ -157,8 +148,7 @@
 
 
 -- Example 4 — Rental Status Dashboard: Returned vs Overdue
-   WITH 
-        record AS 
+   WITH record AS 
         ( SELECT
                 r.rental_id,
                 CONCAT(c.first_name, ' ',c.last_name) AS customer_name,
@@ -185,6 +175,7 @@
         ORDER BY rental_status, 
                  days_kept DESC 
         )
+   
    SELECT 
             COUNT(rental_status), 
             rental_status
@@ -193,12 +184,27 @@
    
    
    
+   -- Example 5 — Actor Talent List: Action and Drama Genre Crossover 
    
-   
-   
+   SELECT DISTINCT a.actor_id, CONCAT(f.film_id, ' ', a.last_name) as actor_name,
+                   c.name
+   from actor as a 
+   join sakila.film_actor as fa on a.actor_id = fa.actor_id
+   join film as f on f.film_id = fa.film_id
+   join sakila.film_category as fc on fc.film_id = f.film_id
+   join sakila.category as c on c.category_id = fc.category_id
 
+  union 
   
-  
+    SELECT DISTINCT a.actor_id, CONCAT(f.film_id, ' ', a.last_name) as actor_name,
+                   c.name
+   from actor as a 
+   join sakila.film_actor as fa on a.actor_id = fa.actor_id
+   join film as f on f.film_id = fa.film_id
+   join sakila.film_category as fc on fc.film_id = f.film_id
+   join sakila.category as c on c.category_id = fc.category_id
+   where c.name = 'Drama'
+   order by actor_name
   
   
   
