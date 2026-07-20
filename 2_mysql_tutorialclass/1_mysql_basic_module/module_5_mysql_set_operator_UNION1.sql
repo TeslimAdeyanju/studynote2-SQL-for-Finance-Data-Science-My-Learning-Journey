@@ -21,24 +21,26 @@
     
     
     /*-- Example 2:  Adding a Label Column to Distinguish Source Master people directory with source label*/
-   SELECT
+  SELECT
           first_name,
           last_name,
           email,
-          'Customer' AS person_type 
-           /*-- Literal string to label the source*/
-   FROM   customer
+          'Customer' AS person_type
+          /*-- Literal string to label the source*/
+      FROM customer
+  
+  UNION ALL
    
-   UNION ALL 
-    /*-- Using UNION ALL because customer and staff emails will not overlap*/
-   SELECT
-            first_name,
-            last_name,
-            email,
-            'Staff' AS person_type 
-             /*-- Different label for the staff rows*/
-   FROM     staff
-   ORDER BY person_type;
+  /*-- Using UNION ALL because customer and staff emails will not overlap*/
+  SELECT
+          first_name,
+          last_name,
+          email,
+          'Staff' AS person_type
+          /*-- Different label for the staff rows*/
+      FROM staff
+      ORDER BY 
+          person_type;
     
     
     
@@ -87,31 +89,28 @@ HAVING
 /*-- Filter: only those who spent over £100*/
 UNION ALL
 
-/*-- Segment 2: High-frequency renters from Store 2*/
-SELECT
-    c.customer_id,
-    CONCAT(c.first_name, ' ', c.last_name) AS customer_name,
-    c.store_id,
-    SUM(p.amount)      AS total_spent,
-    COUNT(r.rental_id) AS total_rentals,
-    'Frequent Renter'  AS segment
-FROM customer c
-JOIN payment p 
-ON c.customer_id = p.customer_id
-JOIN rental r 
-ON c.customer_id = r.customer_id
-WHERE c.store_id = 2
-GROUP BY 
-    c.customer_id,
-    c.first_name,
-    c.last_name,
-    c.store_id
-HAVING
-    COUNT(r.rental_id) > 20
-    /*-- Filter: only those with more than 20 rentals*/
-ORDER BY 
-    segment,
-    total_spent DESC;
+ /*-- Segment 2: High-frequency renters from Store 2*/
+ SELECT
+         c.customer_id,
+         CONCAT(c.first_name, ' ', c.last_name) AS customer_name,
+         c.store_id,
+         SUM(p.amount) AS total_spent,
+         COUNT(r.rental_id) AS total_rentals,
+         'Frequent Renter' AS segment
+     FROM customer c
+     JOIN payment p ON c.customer_id = p.customer_id
+     JOIN rental r  ON c.customer_id = r.customer_id
+     WHERE c.store_id = 2
+     GROUP BY
+         c.customer_id,
+         c.first_name,
+         c.last_name,
+         c.store_id
+     HAVING COUNT(r.rental_id) > 20
+         /*-- Filter: only those with more than 20 rentals*/
+     ORDER BY
+         segment,
+         total_spent DESC;
     
     
     

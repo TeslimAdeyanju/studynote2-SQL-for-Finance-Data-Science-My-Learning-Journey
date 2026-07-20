@@ -1,15 +1,17 @@
-SELECT 
-    first_name, 
-    last_name, 
+-- 1. Write a MySQL query to find the name (first_name, last_name) and the salary of the employees 
+-- who have a higher salary than the employee whose last_name='Bull'.
+SELECT
+    first_name,
+    last_name,
     salary
-FROM 
+FROM
     employees
-WHERE 
+WHERE
     salary >
-    (   SELECT 
+    (   SELECT
             salary
-        FROM 
+        FROM
             employees
-        WHERE 
+        WHERE
             last_name ='Bull');
 
