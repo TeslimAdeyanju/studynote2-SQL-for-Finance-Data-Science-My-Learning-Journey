@@ -73,9 +73,38 @@
          AND p1.payment_date < '2005-07-01'
      
      
-     
-     
-     
+ /*--    ### Extended version — with customer name enrichment using a subquery*/
+ /*--*/
+ /*--Once you have the intersecting `customer_id` list, you can wrap it in a subquery to pull in 
+ -- descriptive details:*/
+   
+   -- Add customer name details to the INTERSECT result using a subquery
+ SELECT
+         c.customer_id,
+         CONCAT(c.first_name, ' ', c.last_name) AS customer_name,
+         c.email,
+         c.store_id
+     FROM customer c
+     WHERE c.customer_id 
+         IN 
+         (
+         /*-- Inner INTERSECT query produces the matching customer_ids*/
+         SELECT 
+                 DISTINCT customer_id
+             FROM rental
+             WHERE rental_date >= '2005-06-01' 
+                 AND rental_date < '2005-07-01'
+         
+         INTERSECT
+         
+         SELECT 
+                 DISTINCT customer_id
+             FROM payment
+             WHERE payment_date >= '2005-06-01' 
+                 AND payment_date < '2005-07-01' )
+     ORDER BY 
+         c.last_name ASC;
+ 
      
      
      
