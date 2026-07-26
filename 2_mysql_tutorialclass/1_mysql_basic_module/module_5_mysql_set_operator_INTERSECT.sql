@@ -106,6 +106,110 @@
          c.last_name ASC;
  
      
-     
-     
-    
+ /*-- Example 4 — Actors Who Appeared in Both Action and Comedy Films*/
+ /*-- The marketing team is building a versatile talent shortlist — actors who have demonstrated
+ -- range by appearing in both Action and Comedy films. These actors are ideal for cross-genre
+ -- promotional campaigns.*/
+ /*-- Actors who appeared in at least one Action film*/
+ SELECT 
+         DISTINCT a.actor_id,
+         CONCAT(a.first_name, ' ', a.last_name) AS actor_name
+     FROM actor a
+     JOIN film_actor fa    ON a.actor_id = fa.actor_id
+     JOIN film_category fc ON fa.film_id = fc.film_id
+     JOIN category c       ON fc.category_id = c.category_id
+     WHERE c.name = 'Action' /*-- Genre filter: Action only*/
+ 
+ INTERSECT
+ 
+ /*-- Actors who appeared in at least one Comedy film*/
+ SELECT 
+         DISTINCT a.actor_id,
+         CONCAT(a.first_name, ' ', a.last_name) AS actor_name
+     FROM actor a
+     JOIN film_actor fa    ON a.actor_id = fa.actor_id
+     JOIN film_category fc ON fa.film_id = fc.film_id
+     JOIN category c       ON fc.category_id = c.category_id
+     WHERE c.name = 'Comedy' /*-- Genre filter: Comedy only*/
+     ORDER BY 
+         actor_name ASC;
+ 
+ -- Example 5 — High-Value Customers Active IN Both Revenue AND Rental Volume
+ /*-- ### Business Scenario*/
+ /*-- The CRM team wants to identify **premium customers** — specifically those who rank in the ** 
+ -- top 100 by total spend** AND simultaneously in the **top 100 by rental count**. These dual- 
+ -- qualification customers represent the most engaged and valuable segment for a VIP loyalty 
+ -- programme.*/
+ 
+
+ SELECT
+         customer_id
+     FROM payment
+     GROUP BY
+         customer_id
+     ORDER BY
+         SUM(amount) DESC
+     LIMIT 100 
+ /*-- Only the top 100 spenders*/
+ INTERSECT
+  
+ /*-- Top 100 customers by total rental count*/
+ SELECT
+         customer_id
+     FROM rental
+     GROUP BY
+         customer_id
+     ORDER BY
+         COUNT(rental_id) DESC
+     LIMIT 100;
+ /*-- Only the top 100 renters*/
+ 
+ 
+ -- -- Enrich the intersection result with full customer profile
+ SELECT
+         c.customer_id,
+         CONCAT(c.first_name, ' ', c.last_name) AS customer_name,
+         c.email,
+         c.store_id,
+         SUM(p.amount) AS total_spent,
+         COUNT(r.rental_id) AS total_rentals
+     FROM customer c
+     JOIN payment p ON c.customer_id = p.customer_id
+     JOIN rental r  ON c.customer_id = r.customer_id
+     WHERE c.customer_id 
+         IN 
+         ( SELECT 
+                 customer_id 
+             FROM ( SELECT 
+                         customer_id 
+                     FROM payment
+                     GROUP BY 
+                         customer_id 
+                     ORDER BY 
+                         SUM(amount) DESC 
+                     LIMIT 100 ) AS top_spenders
+          
+         INTERSECT
+          
+         SELECT 
+                 customer_id 
+             FROM ( SELECT 
+                         customer_id 
+                     FROM rental
+                     GROUP BY 
+                         customer_id 
+                     ORDER BY 
+                         COUNT(rental_id) DESC 
+                     LIMIT 100 ) AS top_renters )
+     GROUP BY
+         c.customer_id, 
+         c.first_name, 
+         c.last_name, 
+         c.email, 
+         c.store_id
+     ORDER BY
+         total_spent DESC;
+ 
+ 
+ 
+ 
