@@ -1,227 +1,176 @@
     /*-- Database: Sakila*/
     /*-- Set Operator*/
-    /*-- UNION Operator*/
+    /*-- EXCEPT Operator*/
     /*-- Example 1: Retrieve all unique first and last names across customers and staff*/
-   SELECT
-          first_name, 
-           /*-- Column 1: first name*/
-          last_name 
-           /*-- Column 2: last name*/
-   FROM   customer 
-    /*-- First data source: customers*/
-   UNION 
-    /*-- Combine results, removing duplicates*/
-   SELECT
-          first_name, 
-           /*-- Must match: Column 1*/
-          last_name 
-           /*-- Must match: Column 2*/
-   FROM   staff;
-    
-    
-    
-    /*-- Example 2:  Adding a Label Column to Distinguish Source Master people directory with source label*/
-  SELECT
-          first_name,
-          last_name,
-          email,
-          'Customer' AS person_type
-          /*-- Literal string to label the source*/
-      FROM customer
-  
-  UNION ALL
    
-  /*-- Using UNION ALL because customer and staff emails will not overlap*/
-  SELECT
-          first_name,
-          last_name,
-          email,
-          'Staff' AS person_type
-          /*-- Different label for the staff rows*/
-      FROM staff
-      ORDER BY 
-          person_type;
-    
-    
-    
-    /*-- Exqmple 3: Sorted Full Directory with CONCAT and ORDER BY*/
-    /*-- Full sorted contact directory using CONCAT for full name*/
-   SELECT
-          CONCAT(first_name, ' ', last_name) AS full_name, 
-           /*-- Combine into one column*/
-          email,
-          'Customer' AS person_type
-   FROM   customer
    
-   UNION ALL
-   
-   SELECT
-            CONCAT(first_name, ' ', last_name) AS full_name,
-            email,
-            'Staff' AS person_type
-   FROM     staff
-   ORDER BY full_name ASC;
-    
-    
-  /*-- Sort the ENTIRE combined result alphabetically*/
-/*-- Multi-Store Revenue and Activity Analysis*/
-/*-- Segment 1: High-spend customers from Store 1*/
-SELECT
-    c.customer_id,
-    CONCAT(c.first_name, ' ', c.last_name) AS customer_name,
-    c.store_id,
-    SUM(p.amount) AS total_spent,
-    COUNT(r.rental_id) AS total_rentals,
-    'High Spender' AS segment
-FROM customer c
-JOIN payment p 
-ON c.customer_id = p.customer_id
-JOIN rental r 
-ON c.customer_id = r.customer_id
-WHERE c.store_id = 1
-GROUP BY 
-    c.customer_id,
-    c.first_name,
-    c.last_name,
-    c.store_id
-HAVING
-    SUM(p.amount) > 100
-/*-- Filter: only those who spent over £100*/
-UNION ALL
-
- /*-- Segment 2: High-frequency renters from Store 2*/
+ /*-- Example 1 — Customers Who Rented But Never Made a Payment*/
+ /*-- Business Scenario: The finance team needs to identify customers with outstanding balances — 
+ -- those who have rental records but no corresponding payment on file. This is a classic accounts 
+ -- receivable gap analysis: who owes money?*/
+ 
+ /*-- Add customer name and contact details to the EXCEPT result*/
  SELECT
          c.customer_id,
          CONCAT(c.first_name, ' ', c.last_name) AS customer_name,
+         c.email,
          c.store_id,
-         SUM(p.amount) AS total_spent,
-         COUNT(r.rental_id) AS total_rentals,
-         'Frequent Renter' AS segment
+         c.active
      FROM customer c
-     JOIN payment p ON c.customer_id = p.customer_id
-     JOIN rental r  ON c.customer_id = r.customer_id
-     WHERE c.store_id = 2
-     GROUP BY
+     WHERE c.customer_id 
+         IN 
+         (
+         /*-- Inner EXCEPT query: renters with no payment record*/
+         SELECT 
+                 DISTINCT customer_id 
+             FROM rental
+          
+         EXCEPT
+          
+         SELECT 
+                 DISTINCT customer_id 
+             FROM payment )
+     ORDER BY 
+         c.last_name ASC;
+         
+         
+       
+ /*-- Example 2 — Films in the Catalogue That Have Never Been Rented*/
+ /*-- Business Scenario: The inventory manager wants to identify dead stock — films that exist in 
+ -- the film catalogue but have never appeared in a rental transaction. These are candidates for 
+ -- removal, redistribution, or promotional pricing.*/
+ /*-- All film IDs in the catalogue*/
+ SELECT 
+         DISTINCT f.film_id,
+         f.title,
+         f.rating,
+         f.rental_rate
+     FROM film f /*-- Base set: entire film catalogue*/
+ 
+ EXCEPT
+ 
+ /*-- Film IDs that have appeared in at least one rental (via inventory)*/
+ SELECT 
+         DISTINCT f.film_id,
+         f.title,
+         f.rating,
+         f.rental_rate
+     FROM film f
+     JOIN inventory i ON f.film_id = i.film_id /*-- Link film to physical copies*/
+     JOIN rental r    ON i.inventory_id = r.inventory_id /*-- Link copy to rental record*/
+     ORDER BY 
+         rental_rate DESC, 
+         title ASC;
+         
+         
+         
+     
+ /*-- Example 3 — Active Customers Who Have Not Rented in 2005*/
+ /*-- ### Business Scenario: The CRM team is running a **re-engagement campaign**. They want to
+ -- contact all currently active customers who have not made a single rental during 2005 — the core
+ -- trading year in the Sakila data. These are dormant accounts that need to be reactivated.*/
+ /*-- Full re-engagement campaign list with customer details*/
+ SELECT
          c.customer_id,
-         c.first_name,
-         c.last_name,
+         CONCAT(c.first_name, ' ', c.last_name) AS customer_name,
+         c.email,
          c.store_id
-     HAVING COUNT(r.rental_id) > 20
-         /*-- Filter: only those with more than 20 rentals*/
+     FROM customer c
+     WHERE c.active = 1
+         AND c.customer_id 
+         IN 
+         (
+         /*-- Active customers not in the 2005 rental records*/
+         SELECT 
+                 DISTINCT customer_id
+             FROM customer
+             WHERE active = 1
+         
+      UNION
+         
+         SELECT 
+                 DISTINCT customer_id
+             FROM rental
+             WHERE rental_date >= '2005-01-01'
+                 AND rental_date < '2006-01-01' )
+     ORDER BY 
+         c.store_id, 
+         c.last_name ASC;
+ 
+ 
+ 
+ /*-- Example 4 — Actors Who Appeared in Action Films But Not in Comedy Films*/
+ /*-- ### Business Scenario: The talent acquisition team wants to identify **Action-genre 
+ -- specialists** — actors who have credits in Action films but have **never** appeared in a Comedy 
+ -- film. These are candidates for a new Action-only franchise campaign.*/
+ /*-- Actors who appeared in at least one Action film (base set)*/
+ SELECT
+         DISTINCT a.actor_id,
+         CONCAT(a.first_name, ' ', a.last_name) AS actor_name
+     FROM actor a
+     JOIN film_actor fa    ON a.actor_id = fa.actor_id
+     JOIN film_category fc ON fa.film_id = fc.film_id
+     JOIN category c       ON fc.category_id = c.category_id
+     WHERE c.name = 'Action'
+ 
+ EXCEPT
+ 
+ /*-- Actors who appeared in at least one Comedy film (exclusion set)*/
+ SELECT
+         DISTINCT a.actor_id,
+         CONCAT(a.first_name, ' ', a.last_name) AS actor_name
+     FROM actor a
+     JOIN film_actor fa    ON a.actor_id = fa.actor_id
+     JOIN film_category fc ON fa.film_id = fc.film_id
+     JOIN category c       ON fc.category_id = c.category_id
+     WHERE c.name = 'Comedy'
      ORDER BY
-         segment,
-         total_spent DESC;
-    
-    
-    
-    /*-- Sort by segment, then by highest spend*/
-    /*-- Example 3 — Film Catalogue Audit: Pricing Tier Review*/
-    /*-- Tier 1: Premium films (PG-13 or R, priced above $3.00)*/
-   SELECT
-          film_id,
-          title,
-          rating,
-          rental_rate,
-          LENGTH,
-          'Premium Tier' AS pricing_segment 
-   FROM   film
-   WHERE  rental_rate > 3.00
-          AND rating IN ('PG-13',
-                         'R') 
-   UNION ALL
-   SELECT
-            film_id,
-            title,
-            rating,
-            rental_rate,
-            LENGTH,
-            'Budget Tier - Review' AS pricing_segment
-   FROM     film
-   WHERE    rental_rate = 0.99 
-   ORDER BY pricing_segment,
-            rental_rate DESC,
-            title ASC;
-
-
-
-
-
--- Example 4 — Rental Status Dashboard: Returned vs Overdue
-   WITH record AS 
-        ( SELECT
-                r.rental_id,
-                CONCAT(c.first_name, ' ',c.last_name) AS customer_name,
-                r.rental_date,
-                r.return_date,
-                DATEDIFF(r.return_date, r.rental_date) AS days_kept,
-                'Returned' AS rental_status
-        FROM    rental AS r
-        JOIN    sakila.customer AS c ON c.customer_id = c.customer_id
-        WHERE   r.return_date               IS NOT NULL
-        
-        UNION ALL
-        
-        SELECT
-                 r.rental_id,
-                 CONCAT(c.first_name, ' ',c.last_name) AS customer_name,
-                 r.rental_date,
-                 r.return_date,
-                 DATEDIFF(CURRENT_DATE(), r.rental_date) AS days_kept,
-                 'Overdue' AS rental_status
-        FROM     rental AS r
-        JOIN     sakila.customer AS c ON c.customer_id = c.customer_id
-        WHERE    r.return_date               IS NOT NULL
-        ORDER BY rental_status, 
-                 days_kept DESC 
-        )
-   
-   SELECT 
-            COUNT(rental_status), 
-            rental_status
-   FROM     record
-   GROUP BY rental_status
-   
-   
-   
-   -- Example 5 — Actor Talent List: Action and Drama Genre Crossover 
-   
-   SELECT DISTINCT a.actor_id, CONCAT(f.film_id, ' ', a.last_name) as actor_name,
-                   c.name
-   from actor as a 
-   join sakila.film_actor as fa on a.actor_id = fa.actor_id
-   join film as f on f.film_id = fa.film_id
-   join sakila.film_category as fc on fc.film_id = f.film_id
-   join sakila.category as c on c.category_id = fc.category_id
-
-  union 
-  
-    SELECT DISTINCT a.actor_id, CONCAT(f.film_id, ' ', a.last_name) as actor_name,
-                   c.name
-   from actor as a 
-   join sakila.film_actor as fa on a.actor_id = fa.actor_id
-   join film as f on f.film_id = fa.film_id
-   join sakila.film_category as fc on fc.film_id = f.film_id
-   join sakila.category as c on c.category_id = fc.category_id
-   where c.name = 'Drama'
-   order by actor_name
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-    
-    
-    
-    
-    
-    
-    
-    
+         actor_name ASC;
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
